@@ -1,0 +1,373 @@
+/* Creme Bureau — hoja de estilos */
+
+:root {
+  --papel: #edeae3;
+  --papel-claro: #f4f2ed;
+  --tinta: #26241f;
+  --tinta-suave: #6e6a5f;
+  --linea: #d3cec3;
+  --acento: #545a44;
+
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  --medida: 33rem;
+  --margen: clamp(1.5rem, 6vw, 5.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.68;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.contenedor {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 0 var(--margen);
+}
+
+/* Salto de accesibilidad */
+
+.salto {
+  position: absolute;
+  left: -9999px;
+}
+
+.salto:focus {
+  left: var(--margen);
+  top: 1rem;
+  z-index: 10;
+  background: var(--papel-claro);
+  padding: 0.6rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+}
+
+/* Cabecera */
+
+.cabecera {
+  padding-top: 2.25rem;
+  padding-bottom: 4.5rem;
+}
+
+.cabecera__fila {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1.25rem 2rem;
+}
+
+.marca {
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--tinta);
+}
+
+.navegacion {
+  display: flex;
+  gap: 1.75rem;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+}
+
+.navegacion a {
+  color: var(--tinta-suave);
+  text-decoration: none;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid transparent;
+}
+
+.navegacion a:hover {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+}
+
+.navegacion a[aria-current="page"] {
+  color: var(--tinta);
+  border-bottom-color: var(--linea);
+}
+
+/* Portada */
+
+.portada {
+  min-height: 62vh;
+  display: flex;
+  align-items: center;
+  padding-bottom: 5rem;
+}
+
+.portada__enunciado {
+  font-family: var(--serif);
+  font-weight: normal;
+  font-size: clamp(2.1rem, 6.2vw, 4.35rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  margin: 0;
+  max-width: 20ch;
+}
+
+.portada__sello {
+  margin: 2.75rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  letter-spacing: 0.02em;
+  color: var(--tinta-suave);
+}
+
+/* Aparición única al cargar la portada */
+
+.aparece {
+  opacity: 0;
+  animation: aparecer 1.1s ease-out 0.15s forwards;
+}
+
+.aparece--tarde {
+  animation-delay: 0.55s;
+}
+
+@keyframes aparecer {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aparece {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+/* Títulos de página */
+
+.titulo {
+  font-family: var(--serif);
+  font-weight: normal;
+  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin: 0 0 3.25rem;
+  max-width: 22ch;
+}
+
+/* Prosa */
+
+.prosa {
+  max-width: var(--medida);
+}
+
+.prosa p {
+  margin: 0 0 1.5rem;
+}
+
+.prosa p:last-child {
+  margin-bottom: 0;
+}
+
+.prosa a {
+  color: var(--tinta);
+  text-decoration: none;
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 0.08em;
+}
+
+.prosa a:hover {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+}
+
+.destacado {
+  font-size: 1.3125rem;
+  line-height: 1.5;
+  max-width: 26ch;
+  margin: 0 0 2.75rem;
+}
+
+/* Registro: archivo y método comparten esta retícula */
+
+.registro {
+  border-top: 1px solid var(--linea);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entrada {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
+  gap: 0 2.5rem;
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--linea);
+}
+
+.entrada__numero {
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  color: var(--tinta-suave);
+  padding-top: 0.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.entrada__cuerpo {
+  max-width: var(--medida);
+}
+
+.entrada__titulo {
+  font-family: var(--serif);
+  font-weight: normal;
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin: 0 0 0.35rem;
+}
+
+.entrada__nota {
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  color: var(--tinta-suave);
+  margin: 0 0 1.1rem;
+}
+
+.entrada__cuerpo p:last-child {
+  margin-bottom: 0;
+}
+
+.entrada__cuerpo p {
+  margin: 0 0 1.25rem;
+}
+
+/* Contacto */
+
+.linea-contacto {
+  font-family: var(--serif);
+  font-size: clamp(1.35rem, 3.6vw, 2rem);
+  margin: 0 0 2.5rem;
+}
+
+.linea-contacto a {
+  color: var(--tinta);
+  text-decoration: none;
+  border-bottom: 1px solid var(--linea);
+  padding-bottom: 0.1em;
+}
+
+.linea-contacto a:hover {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+}
+
+.dato {
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+  margin: 0 0 0.6rem;
+}
+
+.dato--primero {
+  margin-top: 2.5rem;
+}
+
+.dato a {
+  color: var(--tinta-suave);
+  text-decoration: none;
+  border-bottom: 1px solid var(--linea);
+}
+
+.dato a:hover {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+}
+
+/* Pie */
+
+.pie {
+  margin-top: 7rem;
+  padding: 2rem 0 3rem;
+  border-top: 1px solid var(--linea);
+}
+
+.pie__fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  color: var(--tinta-suave);
+}
+
+.pie__fila p {
+  margin: 0;
+}
+
+.pie__fila a {
+  color: var(--tinta-suave);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.pie__fila a:hover {
+  color: var(--acento);
+  border-bottom-color: var(--acento);
+}
+
+/* Foco visible */
+
+a:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+/* Móvil */
+
+@media (max-width: 40rem) {
+  body {
+    font-size: 1rem;
+  }
+
+  .cabecera {
+    padding-bottom: 3.25rem;
+  }
+
+  .navegacion {
+    gap: 1.25rem;
+  }
+
+  .portada {
+    min-height: 52vh;
+  }
+
+  .entrada {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 2rem 0;
+  }
+
+  .entrada__numero {
+    padding-top: 0;
+  }
+
+  .pie {
+    margin-top: 4.5rem;
+  }
+}
