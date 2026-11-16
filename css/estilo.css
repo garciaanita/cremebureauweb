@@ -134,7 +134,7 @@ button:focus-visible {
   z-index: 50;
   padding-top: var(--margen);
   padding-bottom: var(--margen);
-  background: var(--papel);
+  background: transparent;
 }
 
 /* En la portada flota a media altura sobre las imágenes */
@@ -584,7 +584,7 @@ i {
     position: sticky;
     top: 0;
     transform: none;
-    background: var(--papel);
+    background: transparent;
     padding: var(--margen);
     display: flex;
     flex-wrap: wrap;
@@ -794,8 +794,8 @@ i {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 45;              /* encima del texto, debajo del menú */
-  width: clamp(140px, 15vw, 260px);
+  z-index: 70;              /* encima de todo, también del menú */
+  width: clamp(64px, 6vw, 110px);
   margin: 0;
   visibility: hidden;       /* se muestra cuando el script la coloca */
   will-change: transform;
@@ -813,7 +813,7 @@ i {
 
 @media (max-width: 40rem) {
   .flotante {
-    width: 34vw;
+    width: 18vw;
   }
 }
 
