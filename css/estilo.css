@@ -868,3 +868,9 @@ html:has(body.fondo-verde) {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+
+/* Un bloque oculto (versión en el otro idioma) no debe separar al siguiente:
+   así el texto queda a la misma altura en español y en inglés */
+.bloque[hidden] + .bloque {
+  margin-top: 0;
+}
