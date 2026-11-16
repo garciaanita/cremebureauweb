@@ -788,3 +788,33 @@ i {
     margin-top: 0.4em;
   }
 }
+
+/* Moi: foto que flota por la pantalla y rebota en los bordes (js/flotante.js) */
+.flotante {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 45;              /* encima del texto, debajo del menú */
+  width: clamp(140px, 15vw, 260px);
+  margin: 0;
+  visibility: hidden;       /* se muestra cuando el script la coloca */
+  will-change: transform;
+}
+
+.flotante--lista {
+  visibility: visible;
+}
+
+.flotante img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 40rem) {
+  .flotante {
+    width: 34vw;
+  }
+}
+
+
