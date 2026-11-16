@@ -819,3 +819,22 @@ i {
 }
 
 
+
+/* Portada y contacto: fondo verde del logo y texto crema */
+.fondo-verde {
+  --papel: #302b1b;
+  --tinta: #f4f0e1;
+  --tinta-suave: rgba(244, 240, 225, 0.55);
+  --reserva: rgba(244, 240, 225, 0.08);
+  background: var(--papel);
+  color: var(--tinta);
+}
+
+html:has(body.fondo-verde) {
+  background: #302b1b;
+}
+
+.fondo-verde ::selection {
+  background: #f4f0e1;
+  color: #302b1b;
+}
