@@ -761,3 +761,30 @@ i {
     margin-bottom: 0.3em;
   }
 }
+
+/* Archive: ficha un poco más separada del texto */
+.pagina--archive .fila__nota {
+  padding-right: 2.5em;
+}
+
+/* Archive: índice de proyectos grande, con la tipografía de títulos */
+.pagina--archive .indice {
+  grid-column: 3 / -1;
+  font-family: var(--titulo);
+  letter-spacing: 0;
+  font-size: 3.4em;
+  line-height: 1.02;
+}
+
+@media (max-width: 40rem) {
+  .pagina--archive .fila__nota {
+    padding-right: 0;
+    margin-top: 0.4em;
+  }
+
+  .pagina--archive .indice {
+    grid-column: 1 / -1;
+    font-size: 2em;
+    margin-top: 0.4em;
+  }
+}
