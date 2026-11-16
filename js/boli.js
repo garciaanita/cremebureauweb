@@ -216,6 +216,11 @@
       var velocidad = dist / dt;                                 // px por ms
       var medio = { x: (t.prev.x + p.x) / 2, y: (t.prev.y + p.y) / 2 };
       var ancho = grosorPara(t, velocidad, lista[i].pressure);
+      // El grosor "respira" de forma suave y continua (no a saltos), y cuerpo y cantos
+      // usan el mismo valor: así el borde queda nítido
+      t.respira = (t.respira || 1) + (Math.random() - 0.5) * 0.012;
+      t.respira = Math.max(0.95, Math.min(1.05, t.respira));
+      if (t.hebras.length > 1) ancho *= t.respira;
 
       // Normal al trazo (suavizada) para repartir las hebras a lo ancho
       var nx = -dy / dist, ny = dx / dist;
@@ -239,7 +244,7 @@
       t.flujo = (t.flujo || 0.95) + (Math.random() - 0.5) * 0.03;
       t.flujo = Math.max(0.84, Math.min(1, t.flujo));
       ctx.strokeStyle = tinta((fino ? t.hebras[0].carga : t.flujo) * carga * (1 - rapidez * 0.1));
-      ctx.lineWidth = fino ? ancho : ancho * (0.95 + Math.random() * 0.1);   // el grosor respira
+      ctx.lineWidth = ancho;
       ctx.beginPath();
       ctx.moveTo(t.medio.x, t.medio.y);
       ctx.quadraticCurveTo(t.prev.x, t.prev.y, medio.x, medio.y);
