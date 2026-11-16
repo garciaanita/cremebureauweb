@@ -772,8 +772,8 @@ i {
   grid-column: 3 / -1;
   font-family: var(--titulo);
   letter-spacing: 0;
-  font-size: 3.4em;
-  line-height: 1.02;
+  font-size: 2.6em;
+  line-height: 1.04;
 }
 
 @media (max-width: 40rem) {
@@ -784,7 +784,7 @@ i {
 
   .pagina--archive .indice {
     grid-column: 1 / -1;
-    font-size: 2em;
+    font-size: 1.7em;
     margin-top: 0.4em;
   }
 }
