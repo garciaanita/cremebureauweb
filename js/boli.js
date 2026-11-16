@@ -98,8 +98,9 @@
       var r = Math.random();
       var a = 0;
       if (TACTIL) {
-        // En móvil el grano es muy sutil: con la pantalla tan densa, más grano = trazo borroso
-        if (r < 0.02) a = 0.35 + Math.random() * 0.25;
+        // En móvil: grano nítido y moderado (poros y fibra), sin difuminar
+        if (r < 0.035) a = 0.45 + Math.random() * 0.3;
+        else if (r < 0.2) a = 0.06 + Math.random() * 0.14;
       } else if (r < 0.04) a = 0.55 + Math.random() * 0.3; // poro: casi sin tinta
       else if (r < 0.3) a = 0.08 + Math.random() * 0.22;   // fibra: un poco menos de tinta
       datos.data[i + 3] = Math.round(a * 255);
@@ -108,7 +109,8 @@
     var patron = ctx.createPattern(c, "repeat");
     // En pantallas muy densas (móvil 3x) un grano de 1 píxel físico es tan fino que
     // se ve como neblina: se agranda para que tenga el mismo aspecto que en el ordenador.
-    var escala = Math.max(1, dpr / 2);
+    // Escala entera (1 o 2) y sin suavizado: puntos nítidos, nunca difuminados
+    var escala = Math.max(1, Math.round(dpr / 1.5));
     if (escala > 1 && patron.setTransform && window.DOMMatrix) patron.setTransform(new DOMMatrix().scale(escala));
     return patron;
   }
@@ -137,16 +139,16 @@
   }
 
   function crearHebras(grosor) {
-    // Aproximadamente una hebra por píxel de grosor; un trazo fino es una sola hebra
-    var n = Math.max(1, Math.round(grosor / 1.05));
+    // Pocas hebras y muy parecidas entre sí: en un Bic de verdad la tinta es densa,
+    // solo con una ligera variación interna (sin rayas marcadas a lo largo del trazo)
+    var n = grosor <= 2.2 ? 1 : Math.max(2, Math.round(grosor / 2.6));
     var hebras = [];
     for (var i = 0; i < n; i++) {
       hebras.push({
         pos: n === 1 ? 0 : i / (n - 1) - 0.5,     // de -0,5 a 0,5 del ancho
-        carga: 0.78 + Math.random() * 0.22,
-        deriva: (Math.random() - 0.5) * 0.03,
-        // los bordes del trazo suelen ir algo más cargados que el centro
-        borde: n > 2 && (i === 0 || i === n - 1) ? 0.08 : 0,
+        carga: 0.9 + Math.random() * 0.1,
+        deriva: (Math.random() - 0.5) * 0.01,
+        borde: 0,
         x: null, y: null                            // dónde terminó su último tramo
       });
     }
@@ -222,14 +224,14 @@
       // Ir rápido descarga menos tinta: un poco más claro y con más calvas
       // Con el dedo se va más rápido sin querer: la velocidad aclara mucho menos la tinta
       var rapidez = Math.min(1, velocidad / (t.tactil ? 7 : 3));
-      var carga = t.tactil ? 1.18 : 1;              // tinta más cargada en táctil: trazo más nítido
+      var carga = t.tactil ? 1.06 : 1;              // tinta más cargada en táctil: trazo más nítido
       var n = t.hebras.length;
 
-      // Cuerpo: trazo continuo de ancho completo, centrado en el recorrido real.
-      // Es lo que da el borde liso (sin escalones) en los trazos gruesos.
-      // Se pinta POR DETRÁS de lo ya dibujado, para no tapar las vetas del tramo anterior.
-      ctx.globalCompositeOperation = n === 1 ? "source-over" : "destination-over";
-      ctx.strokeStyle = tinta(n === 1 ? t.hebras[0].carga * carga * (1 - rapidez * 0.15) : 0.82 * carga * (1 - rapidez * 0.12));
+      // Cuerpo: tinta densa y continua de ancho completo, con borde liso.
+      // Se pinta POR DETRÁS de lo ya dibujado para no tapar el tramo anterior.
+      var fino = n === 1;
+      ctx.globalCompositeOperation = fino ? "source-over" : "destination-over";
+      ctx.strokeStyle = tinta((fino ? t.hebras[0].carga : 0.94) * carga * (1 - rapidez * 0.1));
       ctx.lineWidth = ancho;
       ctx.beginPath();
       ctx.moveTo(t.medio.x, t.medio.y);
@@ -237,39 +239,55 @@
       ctx.stroke();
       ctx.globalCompositeOperation = "source-over";
 
-      // Vetas por dentro del cuerpo (solo en trazos con más de una hebra)
-      var anchoHebra = Math.max(0.6, (ancho / Math.max(1, n)) * 1.1);
-      var util = Math.max(0, ancho - anchoHebra);   // las vetas no tocan el borde
+      if (!fino) {
+        // Variación interna muy sutil: zonas un poco más claras u oscuras que cambian
+        // despacio, solapadas para que no se lean como líneas
+        var anchoHebra = (ancho / n) * 1.9;
+        var util = Math.max(0, ancho - anchoHebra);
+        ctx.lineCap = "butt";
+        ctx.globalAlpha = 0.55;
+        for (var k = 0; k < n; k++) {
+          var h = t.hebras[k];
+          h.carga += h.deriva + (Math.random() - 0.5) * 0.008;
+          h.deriva += (Math.random() - 0.5) * 0.002;
+          h.deriva = Math.max(-0.008, Math.min(0.008, h.deriva));
+          if (h.carga < 0.86) { h.carga = 0.86; h.deriva = Math.abs(h.deriva); }
+          if (h.carga > 1) { h.carga = 1; h.deriva = -Math.abs(h.deriva); }
 
-      // Extremos rectos: los tramos de cada veta encajan sin solaparse (sin rayitas)
-      ctx.lineCap = "butt";
-      for (var k = 0; n > 1 && k < n; k++) {
-        var h = t.hebras[k];
-        // La carga cambia poco a poco (vetas) y a veces se queda corta (calvas)
-        h.carga += h.deriva + (Math.random() - 0.5) * 0.02;
-        h.deriva += (Math.random() - 0.5) * 0.005;
-        h.deriva = Math.max(-0.022, Math.min(0.022, h.deriva));
-        var minimo = n === 1 ? 0.8 : (t.tactil ? 0.6 : 0.35);   // en táctil, vetas menos transparentes
-        if (h.carga < minimo) { h.carga = minimo; h.deriva = Math.abs(h.deriva); }
-        if (h.carga > 1) { h.carga = 1; h.deriva = -Math.abs(h.deriva); }
+          var off = h.pos * util;
+          var finX = medio.x + ux * off, finY = medio.y + uy * off;
+          var iniX = h.x === null ? t.medio.x + ux * off : h.x;
+          var iniY = h.y === null ? t.medio.y + uy * off : h.y;
+          h.x = finX; h.y = finY;
 
-        var off = h.pos * util;
-        var finX = medio.x + ux * off, finY = medio.y + uy * off;
-        // Cada tramo empieza exactamente donde acabó el anterior: veta continua
-        var iniX = h.x === null ? t.medio.x + ux * off : h.x;
-        var iniY = h.y === null ? t.medio.y + uy * off : h.y;
-        h.x = finX; h.y = finY;
+          ctx.strokeStyle = tinta(h.carga * carga * (1 - rapidez * 0.1));
+          ctx.lineWidth = anchoHebra;
+          ctx.beginPath();
+          ctx.moveTo(iniX, iniY);
+          ctx.quadraticCurveTo(t.prev.x + ux * off, t.prev.y + uy * off, finX, finY);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
 
-        if (Math.random() < 0.006 + rapidez * 0.02) continue;   // microcalva
-
-        ctx.strokeStyle = tinta(h.carga * carga * (1 - rapidez * 0.15) + h.borde);
-        ctx.lineWidth = anchoHebra;
-        ctx.beginPath();
-        ctx.moveTo(iniX, iniY);
-        ctx.quadraticCurveTo(t.prev.x + ux * off, t.prev.y + uy * off, finX, finY);
-        ctx.stroke();
+        // Bordes: en el bolígrafo la tinta se acumula en los cantos del trazo,
+        // que quedan nítidos y un poco más oscuros
+        var canto = Math.min(1.1, Math.max(0.55, ancho * 0.09));
+        var r = ancho / 2 - canto / 2;
+        ctx.strokeStyle = tinta(1, 0.86);
+        ctx.lineWidth = canto;
+        for (var lado = -1; lado <= 1; lado += 2) {
+          var bx = ux * r * lado, by = uy * r * lado;
+          var clave = lado < 0 ? "bordeA" : "bordeB";
+          var ix = t[clave] ? t[clave].x : t.medio.x + bx, iy = t[clave] ? t[clave].y : t.medio.y + by;
+          var fx = medio.x + bx, fy = medio.y + by;
+          t[clave] = { x: fx, y: fy };
+          ctx.beginPath();
+          ctx.moveTo(ix, iy);
+          ctx.quadraticCurveTo(t.prev.x + bx, t.prev.y + by, fx, fy);
+          ctx.stroke();
+        }
+        ctx.lineCap = "round";
       }
-      ctx.lineCap = "round";
 
       // De vez en cuando, yendo lento, un grumo pequeño
       if (Math.random() < 0.01 * (1 - rapidez)) {
@@ -286,8 +304,8 @@
   // Pasa la capa del trazo al papel: multiplicar = la tinta se oscurece al cruzarse
   function imprimir() {
     // El papel absorbe la tinta: grano fino aplicado una sola vez al trazo terminado.
-    // En pantallas táctiles no se aplica: en una pantalla tan densa difumina el borde.
-    if (!TACTIL) {
+    // Se aplica en puntos nítidos (sin suavizado) para no difuminar el borde.
+    {
       if (!poros) poros = crearGrano();
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
