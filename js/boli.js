@@ -31,8 +31,8 @@
   var GROSOR = 1.4;            // grosor base en px; lo cambia la barra "Grosor"
   var dpr = 1;
   var poros = null;
-  // Pantalla táctil (móvil, tableta): se ajusta la tinta para que el trazo salga nítido
-  var TACTIL = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  // El aspecto de la tinta es el mismo en móvil y en ordenador (grano fino, tinta nítida)
+  var TACTIL = true;
 
   /* --- Tamaño (nítido en retina; conserva el dibujo al redimensionar) --- */
   function redimensionar(c, conservar, dprAnterior) {
@@ -223,8 +223,9 @@
 
       // Ir rápido descarga menos tinta: un poco más claro y con más calvas
       // Con el dedo se va más rápido sin querer: la velocidad aclara mucho menos la tinta
-      var rapidez = Math.min(1, velocidad / (t.tactil ? 7 : 3));
-      var carga = t.tactil ? 1.06 : 1;              // tinta más cargada en táctil: trazo más nítido
+      // La velocidad aclara la tinta solo un poco (igual con ratón que con el dedo)
+      var rapidez = Math.min(1, velocidad / 7);
+      var carga = 1.06;                             // tinta bien cargada: trazo nítido
       var n = t.hebras.length;
 
       // Cuerpo: tinta densa y continua de ancho completo, con borde liso.
