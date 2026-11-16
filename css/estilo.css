@@ -798,6 +798,7 @@ i {
   width: clamp(64px, 6vw, 110px);
   margin: 0;
   visibility: hidden;       /* se muestra cuando el script la coloca */
+  pointer-events: none;     /* no bloquea los clics del menú ni de los enlaces */
   will-change: transform;
 }
 
