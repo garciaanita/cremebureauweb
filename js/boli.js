@@ -33,6 +33,8 @@
   var poros = null;
   // El aspecto de la tinta es el mismo en móvil y en ordenador (grano fino, tinta nítida)
   var TACTIL = true;
+  // En ordenador (ratón) el grano blanco es algo más discreto que en el móvil
+  var ORDENADOR = !(window.matchMedia && window.matchMedia("(pointer: coarse)").matches);
 
   /* --- Tamaño (nítido en retina; conserva el dibujo al redimensionar) --- */
   function redimensionar(c, conservar, dprAnterior) {
@@ -99,8 +101,9 @@
       var a = 0;
       if (TACTIL) {
         // En móvil: grano muy fino y escaso (un punto físico), nítido
-        if (r < 0.022) a = 0.3 + Math.random() * 0.25;
-        else if (r < 0.14) a = 0.05 + Math.random() * 0.1;
+        var menos = ORDENADOR ? 0.6 : 1;            // ordenador: menos puntos y más tenues
+        if (r < 0.022 * menos) a = (0.3 + Math.random() * 0.25) * (ORDENADOR ? 0.8 : 1);
+        else if (r < 0.14 * menos) a = (0.05 + Math.random() * 0.1) * (ORDENADOR ? 0.8 : 1);
       } else if (r < 0.04) a = 0.55 + Math.random() * 0.3; // poro: casi sin tinta
       else if (r < 0.3) a = 0.08 + Math.random() * 0.22;   // fibra: un poco menos de tinta
       datos.data[i + 3] = Math.round(a * 255);
