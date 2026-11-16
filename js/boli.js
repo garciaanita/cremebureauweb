@@ -31,6 +31,8 @@
   var GROSOR = 1.4;            // grosor base en px; lo cambia la barra "Grosor"
   var dpr = 1;
   var poros = null;
+  // Pantalla táctil (móvil, tableta): se ajusta la tinta para que el trazo salga nítido
+  var TACTIL = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
 
   /* --- Tamaño (nítido en retina; conserva el dibujo al redimensionar) --- */
   function redimensionar(c, conservar) {
@@ -75,7 +77,10 @@
     for (var i = 0; i < datos.data.length; i += 4) {
       var r = Math.random();
       var a = 0;
-      if (r < 0.04) a = 0.55 + Math.random() * 0.3;        // poro: casi sin tinta
+      if (TACTIL) {
+        // En móvil el grano es muy sutil: con la pantalla tan densa, más grano = trazo borroso
+        if (r < 0.02) a = 0.35 + Math.random() * 0.25;
+      } else if (r < 0.04) a = 0.55 + Math.random() * 0.3; // poro: casi sin tinta
       else if (r < 0.3) a = 0.08 + Math.random() * 0.22;   // fibra: un poco menos de tinta
       datos.data[i + 3] = Math.round(a * 255);
     }
@@ -197,7 +202,7 @@
       // Ir rápido descarga menos tinta: un poco más claro y con más calvas
       // Con el dedo se va más rápido sin querer: la velocidad aclara mucho menos la tinta
       var rapidez = Math.min(1, velocidad / (t.tactil ? 7 : 3));
-      var carga = t.tactil ? 1.08 : 1;              // tinta algo más cargada en táctil
+      var carga = t.tactil ? 1.18 : 1;              // tinta más cargada en táctil: trazo más nítido
       var n = t.hebras.length;
 
       // Cuerpo: trazo continuo de ancho completo, centrado en el recorrido real.
@@ -272,7 +277,7 @@
     ctxPapel.save();
     ctxPapel.setTransform(1, 0, 0, 1, 0, 0);
     ctxPapel.globalCompositeOperation = "multiply";
-    ctxPapel.globalAlpha = 0.93;
+    ctxPapel.globalAlpha = TACTIL ? 1 : 0.93;
     ctxPapel.drawImage(capa, 0, 0);
     ctxPapel.restore();
     ctx.save();
@@ -345,23 +350,99 @@
     });
   }
 
-  var guardar = document.getElementById("boli-guardar");
-  if (guardar) {
-    guardar.addEventListener("click", function () {
-      // Se exporta sobre fondo blanco, como una hoja de papel
-      var hoja = document.createElement("canvas");
-      hoja.width = papel.width;
-      hoja.height = papel.height;
-      var h = hoja.getContext("2d");
-      h.fillStyle = "#ffffff";
-      h.fillRect(0, 0, hoja.width, hoja.height);
-      h.drawImage(papel, 0, 0);
-      var enlace = document.createElement("a");
-      enlace.download = "creme-bureau-playground.png";
-      enlace.href = hoja.toDataURL("image/png");
-      document.body.appendChild(enlace);
-      enlace.click();
-      enlace.remove();
+  /* --- Guardar: como foto (PNG) o como PDF --- */
+
+  // Hoja con fondo blanco recortada al dibujo (con margen), como una hoja de papel
+  function hojaDelDibujo() {
+    var w = papel.width, h = papel.height;
+    var datos = ctxPapel.getImageData(0, 0, w, h).data;
+    var x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (var y = 0; y < h; y += 2) {
+      for (var x = 0; x < w; x += 2) {
+        if (datos[(y * w + x) * 4 + 3] > 8) {
+          if (x < x0) x0 = x;
+          if (x > x1) x1 = x;
+          if (y < y0) y0 = y;
+          if (y > y1) y1 = y;
+        }
+      }
+    }
+    if (x1 < 0) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }     // hoja vacía: todo
+    var m = Math.round(40 * dpr);
+    x0 = Math.max(0, x0 - m); y0 = Math.max(0, y0 - m);
+    x1 = Math.min(w - 1, x1 + m); y1 = Math.min(h - 1, y1 + m);
+    var hoja = document.createElement("canvas");
+    hoja.width = x1 - x0 + 1;
+    hoja.height = y1 - y0 + 1;
+    var c = hoja.getContext("2d");
+    c.fillStyle = "#ffffff";
+    c.fillRect(0, 0, hoja.width, hoja.height);
+    c.drawImage(papel, x0, y0, hoja.width, hoja.height, 0, 0, hoja.width, hoja.height);
+    return hoja;
+  }
+
+  function descargar(blob, nombre) {
+    var url = URL.createObjectURL(blob);
+    var enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = nombre;
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  }
+
+  function dataURLaBytes(url) {
+    var bin = atob(url.split(",")[1]);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+
+  // PDF mínimo de una página con la imagen en JPEG (sin librerías externas)
+  function crearPDF(hoja) {
+    var jpg = dataURLaBytes(hoja.toDataURL("image/jpeg", 0.95));
+    var anchoPt = hoja.width / dpr * 0.75;     // px de pantalla a puntos (72 ppp)
+    var altoPt = hoja.height / dpr * 0.75;
+    var partes = [], desplaz = [], total = 0;
+    function poner(x) {
+      if (typeof x === "string") { var b = new Uint8Array(x.length); for (var i = 0; i < x.length; i++) b[i] = x.charCodeAt(i) & 255; x = b; }
+      partes.push(x); total += x.length;
+    }
+    function objeto(n, cuerpo) { desplaz[n] = total; poner(n + " 0 obj\n" + cuerpo + "\nendobj\n"); }
+    var dibujo = "q " + anchoPt.toFixed(2) + " 0 0 " + altoPt.toFixed(2) + " 0 0 cm /Im0 Do Q";
+
+    poner("%PDF-1.4\n%âãÏÓ\n");
+    objeto(1, "<< /Type /Catalog /Pages 2 0 R >>");
+    objeto(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+    objeto(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + anchoPt.toFixed(2) + " " + altoPt.toFixed(2) + "] " +
+              "/Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>");
+    desplaz[4] = total;
+    poner("4 0 obj\n<< /Type /XObject /Subtype /Image /Width " + hoja.width + " /Height " + hoja.height +
+          " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpg.length + " >>\nstream\n");
+    poner(jpg);
+    poner("\nendstream\nendobj\n");
+    objeto(5, "<< /Length " + dibujo.length + " >>\nstream\n" + dibujo + "\nendstream");
+    var xref = total;
+    var tabla = "xref\n0 6\n0000000000 65535 f \n";
+    for (var n = 1; n <= 5; n++) tabla += ("0000000000" + desplaz[n]).slice(-10) + " 00000 n \n";
+    poner(tabla + "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF\n");
+    return new Blob(partes, { type: "application/pdf" });
+  }
+
+  var guardarFoto = document.getElementById("boli-guardar-foto");
+  if (guardarFoto) {
+    guardarFoto.addEventListener("click", function () {
+      hojaDelDibujo().toBlob(function (blob) {
+        if (blob) descargar(blob, "creme-bureau-dibujo.png");
+      }, "image/png");
+    });
+  }
+
+  var guardarPdf = document.getElementById("boli-guardar-pdf");
+  if (guardarPdf) {
+    guardarPdf.addEventListener("click", function () {
+      descargar(crearPDF(hojaDelDibujo()), "creme-bureau-dibujo.pdf");
     });
   }
 })();
