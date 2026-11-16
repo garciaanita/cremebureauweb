@@ -80,7 +80,12 @@
       datos.data[i + 3] = Math.round(a * 255);
     }
     g.putImageData(datos, 0, 0);
-    return ctx.createPattern(c, "repeat");
+    var patron = ctx.createPattern(c, "repeat");
+    // En pantallas muy densas (móvil 3x) un grano de 1 píxel físico es tan fino que
+    // se ve como neblina: se agranda para que tenga el mismo aspecto que en el ordenador.
+    var escala = Math.max(1, dpr / 2);
+    if (escala > 1 && patron.setTransform && window.DOMMatrix) patron.setTransform(new DOMMatrix().scale(escala));
+    return patron;
   }
 
   /* --- Color de la tinta según la carga (menos carga = más claro, como tinta escasa) --- */
@@ -142,7 +147,8 @@
     var p = punto(e);
     trazos[e.pointerId] = {
       prev: p, medio: p, inicio: p, grosor: 0, movido: false,
-      hebras: crearHebras(GROSOR), nx: 0, ny: 0, quieto: 0
+      hebras: crearHebras(GROSOR), nx: 0, ny: 0, quieto: 0,
+      tactil: e.pointerType !== "mouse"            // dedo o lápiz: se pinta más rápido
     };
     activos++;
 
@@ -189,14 +195,16 @@
       var ux = t.nx / ln, uy = t.ny / ln;
 
       // Ir rápido descarga menos tinta: un poco más claro y con más calvas
-      var rapidez = Math.min(1, velocidad / 3);
+      // Con el dedo se va más rápido sin querer: la velocidad aclara mucho menos la tinta
+      var rapidez = Math.min(1, velocidad / (t.tactil ? 7 : 3));
+      var carga = t.tactil ? 1.08 : 1;              // tinta algo más cargada en táctil
       var n = t.hebras.length;
 
       // Cuerpo: trazo continuo de ancho completo, centrado en el recorrido real.
       // Es lo que da el borde liso (sin escalones) en los trazos gruesos.
       // Se pinta POR DETRÁS de lo ya dibujado, para no tapar las vetas del tramo anterior.
       ctx.globalCompositeOperation = n === 1 ? "source-over" : "destination-over";
-      ctx.strokeStyle = tinta(n === 1 ? t.hebras[0].carga * (1 - rapidez * 0.15) : 0.82 * (1 - rapidez * 0.12));
+      ctx.strokeStyle = tinta(n === 1 ? t.hebras[0].carga * carga * (1 - rapidez * 0.15) : 0.82 * carga * (1 - rapidez * 0.12));
       ctx.lineWidth = ancho;
       ctx.beginPath();
       ctx.moveTo(t.medio.x, t.medio.y);
@@ -229,7 +237,7 @@
 
         if (Math.random() < 0.006 + rapidez * 0.02) continue;   // microcalva
 
-        ctx.strokeStyle = tinta(h.carga * (1 - rapidez * 0.15) + h.borde);
+        ctx.strokeStyle = tinta(h.carga * carga * (1 - rapidez * 0.15) + h.borde);
         ctx.lineWidth = anchoHebra;
         ctx.beginPath();
         ctx.moveTo(iniX, iniY);
