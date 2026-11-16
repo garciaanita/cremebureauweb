@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap">
-<link rel="stylesheet" href="css/estilo.css?v=202611161417">
+<link rel="stylesheet" href="css/estilo.css?v=202611161420">
 <link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-contorno-oscuro-32.png">
 <link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-contorno-oscuro-32.png" media="(prefers-color-scheme: light)">
 <link rel="icon" type="image/png" sizes="192x192" href="img/logo/icono-contorno-oscuro-192.png" media="(prefers-color-scheme: light)">
@@ -62,11 +62,16 @@
     <span class="boli-grosor__muestra" aria-hidden="true"><span id="boli-grosor-punto"></span></span>
   </label>
   <button type="button" id="boli-borrar"><span data-i18n="es">Borrar</span><span data-i18n="en" hidden>Clear</span></button>
-  <button type="button" id="boli-guardar-foto"><span data-i18n="es">Guardar foto</span><span data-i18n="en" hidden>Save image</span></button>
-  <button type="button" id="boli-guardar-pdf"><span data-i18n="es">Guardar PDF</span><span data-i18n="en" hidden>Save PDF</span></button>
+  <div class="boli-guardar">
+    <button type="button" id="boli-guardar" aria-expanded="false" aria-controls="boli-guardar-menu"><span data-i18n="es">Guardar dibu</span><span data-i18n="en" hidden>Save doodle</span></button>
+    <div class="boli-guardar__menu" id="boli-guardar-menu" hidden>
+      <button type="button" id="boli-guardar-foto"><span data-i18n="es">Foto</span><span data-i18n="en" hidden>Image</span></button>
+      <button type="button" id="boli-guardar-pdf">PDF</button>
+    </div>
+  </div>
 </div>
 
-<script src="js/cristal.js?v=202611161417"></script>
-<script src="js/boli.js?v=202611161417"></script>
+<script src="js/cristal.js?v=202611161420"></script>
+<script src="js/boli.js?v=202611161420"></script>
 </body>
 </html>

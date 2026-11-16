@@ -838,3 +838,33 @@ html:has(body.fondo-verde) {
   background: #f4f0e1;
   color: #302b1b;
 }
+
+/* Playground: "Guardar dibu" abre un menú con Foto / PDF */
+.boli-guardar {
+  position: relative;
+}
+
+.boli-guardar__menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  background: var(--papel);
+  padding: 4px 0;
+}
+
+.boli-guardar__menu[hidden] {
+  display: none;
+}
+
+.boli-guardar__menu button {
+  white-space: nowrap;
+}
+
+#boli-guardar[aria-expanded="true"] {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

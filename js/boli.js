@@ -430,6 +430,30 @@
     return new Blob(partes, { type: "application/pdf" });
   }
 
+  // "Guardar dibu" abre un pequeño menú con las dos opciones: Foto o PDF
+  var botonGuardar = document.getElementById("boli-guardar");
+  var menuGuardar = document.getElementById("boli-guardar-menu");
+
+  function menuAbierto(abrir) {
+    if (!botonGuardar || !menuGuardar) return;
+    menuGuardar.hidden = !abrir;
+    botonGuardar.setAttribute("aria-expanded", abrir ? "true" : "false");
+  }
+
+  if (botonGuardar && menuGuardar) {
+    botonGuardar.addEventListener("click", function (e) {
+      e.stopPropagation();
+      menuAbierto(menuGuardar.hidden);
+    });
+    menuGuardar.addEventListener("click", function () { menuAbierto(false); });
+    document.addEventListener("click", function (e) {
+      if (!menuGuardar.hidden && !e.target.closest(".boli-guardar")) menuAbierto(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") menuAbierto(false);
+    });
+  }
+
   var guardarFoto = document.getElementById("boli-guardar-foto");
   if (guardarFoto) {
     guardarFoto.addEventListener("click", function () {
