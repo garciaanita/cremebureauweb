@@ -7,7 +7,10 @@
 //   multiplicar, así la tinta se oscurece donde se cruza con trazos anteriores.
 // · Vetas: el trazo son varias hebras finas paralelas (la bolita deja rayitas). Cada
 //   hebra lleva su propia carga de tinta, que cambia poco a poco y a veces se seca.
-// · Grano: diminutos poros del papel, fijos en la hoja, que se quedan sin tinta.
+// · Cuerpo liso: debajo de las vetas hay un trazo continuo de ancho completo, así
+//   el borde es suave y no hace escalones en las curvas.
+// · Grano: al levantar la punta, un grano fino de intensidades variables "come"
+//   un poco de tinta, como el papel al absorberla (borde ligeramente irregular).
 // · Grumos: al apoyar la punta o al quedarse quieto, la bolita suelta un pegote.
 (function () {
   "use strict";
@@ -62,31 +65,22 @@
     esperaResize = setTimeout(ajustar, 120);
   });
 
-  /* --- Poros del papel: puntitos que se quedan sin tinta, fijos en la hoja --- */
-  function crearPoros() {
-    var lado = 160;
+  /* --- Grano del papel: cuánta tinta "se come" cada punto (fijo en la hoja) --- */
+  function crearGrano() {
+    var lado = 192;
     var c = document.createElement("canvas");
     c.width = c.height = lado;
     var g = c.getContext("2d");
     var datos = g.createImageData(lado, lado);
     for (var i = 0; i < datos.data.length; i += 4) {
-      // 0 = deja la tinta; 255 = poro (se borra del todo, así repetirlo no acumula)
-      datos.data[i + 3] = Math.random() < 0.025 ? 255 : 0;
+      var r = Math.random();
+      var a = 0;
+      if (r < 0.04) a = 0.55 + Math.random() * 0.3;        // poro: casi sin tinta
+      else if (r < 0.3) a = 0.08 + Math.random() * 0.22;   // fibra: un poco menos de tinta
+      datos.data[i + 3] = Math.round(a * 255);
     }
     g.putImageData(datos, 0, 0);
-    var patron = ctx.createPattern(c, "repeat");
-    if (patron.setTransform && window.DOMMatrix) patron.setTransform(new DOMMatrix().scale(1 / dpr));
-    return patron;
-  }
-
-  function aplicarPoros(x0, y0, x1, y1, margen) {
-    if (!poros) poros = crearPoros();
-    ctx.save();
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = poros;
-    var x = Math.min(x0, x1) - margen, y = Math.min(y0, y1) - margen;
-    ctx.fillRect(x, y, Math.abs(x1 - x0) + margen * 2, Math.abs(y1 - y0) + margen * 2);
-    ctx.restore();
+    return ctx.createPattern(c, "repeat");
   }
 
   /* --- Color de la tinta según la carga (menos carga = más claro, como tinta escasa) --- */
@@ -122,7 +116,8 @@
         carga: 0.78 + Math.random() * 0.22,
         deriva: (Math.random() - 0.5) * 0.03,
         // los bordes del trazo suelen ir algo más cargados que el centro
-        borde: n > 2 && (i === 0 || i === n - 1) ? 0.08 : 0
+        borde: n > 2 && (i === 0 || i === n - 1) ? 0.08 : 0,
+        x: null, y: null                            // dónde terminó su último tramo
       });
     }
     return hebras;
@@ -152,9 +147,7 @@
     activos++;
 
     // Al apoyar la punta, la bolita suelta un poco de tinta
-    var r = Math.max(0.6, GROSOR * 0.42);
-    grumo(p.x, p.y, r);
-    aplicarPoros(p.x, p.y, p.x, p.y, r + 2);
+    grumo(p.x, p.y, Math.max(0.6, GROSOR * 0.42));
   }
 
   function mover(e) {
@@ -198,28 +191,52 @@
       // Ir rápido descarga menos tinta: un poco más claro y con más calvas
       var rapidez = Math.min(1, velocidad / 3);
       var n = t.hebras.length;
-      var anchoHebra = n === 1 ? ancho : Math.max(0.85, (ancho / n) * 1.45);
 
-      for (var k = 0; k < n; k++) {
+      // Cuerpo: trazo continuo de ancho completo, centrado en el recorrido real.
+      // Es lo que da el borde liso (sin escalones) en los trazos gruesos.
+      // Se pinta POR DETRÁS de lo ya dibujado, para no tapar las vetas del tramo anterior.
+      ctx.globalCompositeOperation = n === 1 ? "source-over" : "destination-over";
+      ctx.strokeStyle = tinta(n === 1 ? t.hebras[0].carga * (1 - rapidez * 0.15) : 0.82 * (1 - rapidez * 0.12));
+      ctx.lineWidth = ancho;
+      ctx.beginPath();
+      ctx.moveTo(t.medio.x, t.medio.y);
+      ctx.quadraticCurveTo(t.prev.x, t.prev.y, medio.x, medio.y);
+      ctx.stroke();
+      ctx.globalCompositeOperation = "source-over";
+
+      // Vetas por dentro del cuerpo (solo en trazos con más de una hebra)
+      var anchoHebra = Math.max(0.6, (ancho / Math.max(1, n)) * 1.1);
+      var util = Math.max(0, ancho - anchoHebra);   // las vetas no tocan el borde
+
+      // Extremos rectos: los tramos de cada veta encajan sin solaparse (sin rayitas)
+      ctx.lineCap = "butt";
+      for (var k = 0; n > 1 && k < n; k++) {
         var h = t.hebras[k];
         // La carga cambia poco a poco (vetas) y a veces se queda corta (calvas)
-        h.carga += h.deriva + (Math.random() - 0.5) * 0.05;
-        h.deriva += (Math.random() - 0.5) * 0.008;
-        h.deriva = Math.max(-0.04, Math.min(0.04, h.deriva));
+        h.carga += h.deriva + (Math.random() - 0.5) * 0.02;
+        h.deriva += (Math.random() - 0.5) * 0.005;
+        h.deriva = Math.max(-0.022, Math.min(0.022, h.deriva));
         var minimo = n === 1 ? 0.8 : 0.35;
         if (h.carga < minimo) { h.carga = minimo; h.deriva = Math.abs(h.deriva); }
         if (h.carga > 1) { h.carga = 1; h.deriva = -Math.abs(h.deriva); }
 
-        if (n > 1 && Math.random() < 0.006 + rapidez * 0.02) continue;   // microcalva
+        var off = h.pos * util;
+        var finX = medio.x + ux * off, finY = medio.y + uy * off;
+        // Cada tramo empieza exactamente donde acabó el anterior: veta continua
+        var iniX = h.x === null ? t.medio.x + ux * off : h.x;
+        var iniY = h.y === null ? t.medio.y + uy * off : h.y;
+        h.x = finX; h.y = finY;
 
-        var off = h.pos * ancho;
+        if (Math.random() < 0.006 + rapidez * 0.02) continue;   // microcalva
+
         ctx.strokeStyle = tinta(h.carga * (1 - rapidez * 0.15) + h.borde);
         ctx.lineWidth = anchoHebra;
         ctx.beginPath();
-        ctx.moveTo(t.medio.x + ux * off, t.medio.y + uy * off);
-        ctx.quadraticCurveTo(t.prev.x + ux * off, t.prev.y + uy * off, medio.x + ux * off, medio.y + uy * off);
+        ctx.moveTo(iniX, iniY);
+        ctx.quadraticCurveTo(t.prev.x + ux * off, t.prev.y + uy * off, finX, finY);
         ctx.stroke();
       }
+      ctx.lineCap = "round";
 
       // De vez en cuando, yendo lento, un grumo pequeño
       if (Math.random() < 0.01 * (1 - rapidez)) {
@@ -228,8 +245,6 @@
               Math.max(0.5, ancho * 0.28));
       }
 
-      aplicarPoros(t.medio.x, t.medio.y, medio.x, medio.y, ancho + 2);
-
       t.medio = medio;
       t.prev = p;
     }
@@ -237,6 +252,15 @@
 
   // Pasa la capa del trazo al papel: multiplicar = la tinta se oscurece al cruzarse
   function imprimir() {
+    // El papel absorbe la tinta: grano fino aplicado una sola vez al trazo terminado
+    if (!poros) poros = crearGrano();
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.fillStyle = poros;
+    ctx.fillRect(0, 0, capa.width, capa.height);
+    ctx.restore();
+
     ctxPapel.save();
     ctxPapel.setTransform(1, 0, 0, 1, 0, 0);
     ctxPapel.globalCompositeOperation = "multiply";
