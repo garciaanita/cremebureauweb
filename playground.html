@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Playground — Creme Bureau</title>
+<meta name="description" content="Un espacio en construcción para pruebas y juego, al margen del encargo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap">
+<link rel="stylesheet" href="css/estilo.css">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/logo/icono-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-32-claro.png" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="img/logo/apple-touch-icon.png">
+</head>
+<body>
+
+<a class="salto" href="#principal">Ir al contenido</a>
+
+<header class="nav reticula">
+  <a class="nav__marca" href="index.html">Creme Bureau</a>
+  <a class="nav__logo" href="index.html" tabindex="-1" aria-hidden="true"><img src="img/logo/logo-menu.png" alt="" width="59" height="96"></a>
+  <span class="nav__salto" aria-hidden="true"></span>
+  <nav class="nav__enlaces" aria-label="Principal">
+    <a href="moi.html">moi</a>
+    <a href="archive.html">archive</a>
+    <a href="playground.html" aria-current="page">playground</a>
+    <a href="get-in-touch.html">get in touch</a>
+  </nav>
+  <div class="nav__extra">
+    <a href="https://www.instagram.com/cremebureau/" rel="me">Instagram</a>
+    <button class="idioma" id="idioma-btn" type="button">English</button>
+  </div>
+</header>
+
+<main id="principal" class="pagina">
+  <section class="bloque reticula" data-i18n="es">
+    <h1 class="etiqueta">Playground</h1>
+    <div class="texto">
+      <p class="boli-pista">Hey, que si te apetece coger un boli (digital) y garabatear un ratito, aquí tienes tu espacio :)</p>
+      <p class="boli-pista">A lo loco. Luego puedes guardarte el dibujito.</p>
+    </div>
+  </section>
+
+  <section class="bloque reticula" data-i18n="en" hidden>
+    <h1 class="etiqueta">Playground</h1>
+    <div class="texto">
+      <p class="boli-pista">Hey, if you feel like grabbing a (digital) pen and doodling for a bit, here's your space :)</p>
+      <p class="boli-pista">Go wild. You can save your little drawing afterwards.</p>
+    </div>
+  </section>
+</main>
+
+<canvas class="boli-lienzo" id="boli-lienzo" aria-hidden="true"></canvas>
+
+<div class="boli-controles">
+  <label class="boli-grosor" for="boli-grosor">
+    <span data-i18n="es">Grosor</span><span data-i18n="en" hidden>Size</span>
+    <input type="range" id="boli-grosor" min="0.8" max="14" step="0.1" value="1.4">
+    <span class="boli-grosor__muestra" aria-hidden="true"><span id="boli-grosor-punto"></span></span>
+  </label>
+  <button type="button" id="boli-borrar"><span data-i18n="es">Borrar</span><span data-i18n="en" hidden>Clear</span></button>
+  <button type="button" id="boli-guardar"><span data-i18n="es">Guardar dibujo</span><span data-i18n="en" hidden>Save drawing</span></button>
+</div>
+
+<script src="js/cristal.js"></script>
+<script src="js/boli.js"></script>
+</body>
+</html>
