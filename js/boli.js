@@ -35,7 +35,7 @@
   var TACTIL = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
 
   /* --- Tamaño (nítido en retina; conserva el dibujo al redimensionar) --- */
-  function redimensionar(c, conservar) {
+  function redimensionar(c, conservar, dprAnterior) {
     var copia = null;
     if (conservar && c.width && c.height) {
       copia = document.createElement("canvas");
@@ -47,12 +47,25 @@
     c.height = Math.round(window.innerHeight * dpr);
     c.style.width = window.innerWidth + "px";
     c.style.height = window.innerHeight + "px";
-    if (copia) c.getContext("2d").drawImage(copia, 0, 0);
+    if (copia) {
+      // Si cambia la densidad (zoom), el dibujo se reescala para seguir en su sitio
+      var k = dpr / (dprAnterior || dpr);
+      c.getContext("2d").drawImage(copia, 0, 0, copia.width * k, copia.height * k);
+      copia.width = copia.height = 0;          // libera memoria (importante en iPhone)
+    }
+  }
+
+  // Densidad real de píxeles, contando el zoom con los dedos (si no, el lienzo
+  // se estiraría y el trazo se vería borroso en el móvil)
+  function densidad() {
+    var zoom = window.visualViewport ? window.visualViewport.scale || 1 : 1;
+    return Math.min((window.devicePixelRatio || 1) * Math.max(1, zoom), 4);
   }
 
   function ajustar() {
-    dpr = Math.min(window.devicePixelRatio || 1, 3);
-    redimensionar(papel, true);
+    var dprAnterior = dpr;
+    dpr = densidad();
+    redimensionar(papel, true, dprAnterior);
     redimensionar(capa, false);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.lineCap = "round";
@@ -62,10 +75,17 @@
 
   ajustar();
   var esperaResize = null;
-  window.addEventListener("resize", function () {
+  function alRedimensionar() {
     clearTimeout(esperaResize);
-    esperaResize = setTimeout(ajustar, 120);
-  });
+    esperaResize = setTimeout(function () {
+      // En iPhone la barra de Safari cambia el alto a menudo: solo se rehace si hace falta
+      var w = Math.round(window.innerWidth * densidad());
+      var h = Math.round(window.innerHeight * densidad());
+      if (w !== papel.width || h !== papel.height) ajustar();
+    }, 120);
+  }
+  window.addEventListener("resize", alRedimensionar);
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", alRedimensionar);
 
   /* --- Grano del papel: cuánta tinta "se come" cada punto (fijo en la hoja) --- */
   function crearGrano() {
@@ -229,7 +249,7 @@
         h.carga += h.deriva + (Math.random() - 0.5) * 0.02;
         h.deriva += (Math.random() - 0.5) * 0.005;
         h.deriva = Math.max(-0.022, Math.min(0.022, h.deriva));
-        var minimo = n === 1 ? 0.8 : 0.35;
+        var minimo = n === 1 ? 0.8 : (t.tactil ? 0.6 : 0.35);   // en táctil, vetas menos transparentes
         if (h.carga < minimo) { h.carga = minimo; h.deriva = Math.abs(h.deriva); }
         if (h.carga > 1) { h.carga = 1; h.deriva = -Math.abs(h.deriva); }
 
@@ -265,18 +285,23 @@
 
   // Pasa la capa del trazo al papel: multiplicar = la tinta se oscurece al cruzarse
   function imprimir() {
-    // El papel absorbe la tinta: grano fino aplicado una sola vez al trazo terminado
-    if (!poros) poros = crearGrano();
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillStyle = poros;
-    ctx.fillRect(0, 0, capa.width, capa.height);
-    ctx.restore();
+    // El papel absorbe la tinta: grano fino aplicado una sola vez al trazo terminado.
+    // En pantallas táctiles no se aplica: en una pantalla tan densa difumina el borde.
+    if (!TACTIL) {
+      if (!poros) poros = crearGrano();
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.imageSmoothingEnabled = false;
+      ctx.fillStyle = poros;
+      ctx.fillRect(0, 0, capa.width, capa.height);
+      ctx.restore();
+    }
 
     ctxPapel.save();
     ctxPapel.setTransform(1, 0, 0, 1, 0, 0);
     ctxPapel.globalCompositeOperation = "multiply";
+    ctxPapel.imageSmoothingEnabled = false;      // copia píxel a píxel, sin suavizar
     ctxPapel.globalAlpha = TACTIL ? 1 : 0.93;
     ctxPapel.drawImage(capa, 0, 0);
     ctxPapel.restore();
