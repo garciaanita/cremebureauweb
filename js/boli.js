@@ -98,9 +98,9 @@
       var r = Math.random();
       var a = 0;
       if (TACTIL) {
-        // En móvil: grano nítido y moderado (poros y fibra), sin difuminar
-        if (r < 0.035) a = 0.45 + Math.random() * 0.3;
-        else if (r < 0.2) a = 0.06 + Math.random() * 0.14;
+        // En móvil: grano muy fino y escaso (un punto físico), nítido
+        if (r < 0.022) a = 0.3 + Math.random() * 0.25;
+        else if (r < 0.14) a = 0.05 + Math.random() * 0.1;
       } else if (r < 0.04) a = 0.55 + Math.random() * 0.3; // poro: casi sin tinta
       else if (r < 0.3) a = 0.08 + Math.random() * 0.22;   // fibra: un poco menos de tinta
       datos.data[i + 3] = Math.round(a * 255);
@@ -110,7 +110,7 @@
     // En pantallas muy densas (móvil 3x) un grano de 1 píxel físico es tan fino que
     // se ve como neblina: se agranda para que tenga el mismo aspecto que en el ordenador.
     // Escala entera (1 o 2) y sin suavizado: puntos nítidos, nunca difuminados
-    var escala = Math.max(1, Math.round(dpr / 1.5));
+    var escala = 1;                                // un punto físico: grano muy fino
     if (escala > 1 && patron.setTransform && window.DOMMatrix) patron.setTransform(new DOMMatrix().scale(escala));
     return patron;
   }
@@ -146,8 +146,8 @@
     for (var i = 0; i < n; i++) {
       hebras.push({
         pos: n === 1 ? 0 : i / (n - 1) - 0.5,     // de -0,5 a 0,5 del ancho
-        carga: 0.9 + Math.random() * 0.1,
-        deriva: (Math.random() - 0.5) * 0.01,
+        carga: 0.8 + Math.random() * 0.2,
+        deriva: (Math.random() - 0.5) * 0.03,
         borde: 0,
         x: null, y: null                            // dónde terminó su último tramo
       });
@@ -231,8 +231,11 @@
       // Se pinta POR DETRÁS de lo ya dibujado para no tapar el tramo anterior.
       var fino = n === 1;
       ctx.globalCompositeOperation = fino ? "source-over" : "destination-over";
-      ctx.strokeStyle = tinta((fino ? t.hebras[0].carga : 0.94) * carga * (1 - rapidez * 0.1));
-      ctx.lineWidth = ancho;
+      // La carga general del boli varía despacio a lo largo del trazo
+      t.flujo = (t.flujo || 0.95) + (Math.random() - 0.5) * 0.03;
+      t.flujo = Math.max(0.84, Math.min(1, t.flujo));
+      ctx.strokeStyle = tinta((fino ? t.hebras[0].carga : t.flujo) * carga * (1 - rapidez * 0.1));
+      ctx.lineWidth = fino ? ancho : ancho * (0.95 + Math.random() * 0.1);   // el grosor respira
       ctx.beginPath();
       ctx.moveTo(t.medio.x, t.medio.y);
       ctx.quadraticCurveTo(t.prev.x, t.prev.y, medio.x, medio.y);
@@ -245,13 +248,13 @@
         var anchoHebra = (ancho / n) * 1.9;
         var util = Math.max(0, ancho - anchoHebra);
         ctx.lineCap = "butt";
-        ctx.globalAlpha = 0.55;
+        ctx.globalAlpha = 0.62;
         for (var k = 0; k < n; k++) {
           var h = t.hebras[k];
-          h.carga += h.deriva + (Math.random() - 0.5) * 0.008;
-          h.deriva += (Math.random() - 0.5) * 0.002;
-          h.deriva = Math.max(-0.008, Math.min(0.008, h.deriva));
-          if (h.carga < 0.86) { h.carga = 0.86; h.deriva = Math.abs(h.deriva); }
+          h.carga += h.deriva + (Math.random() - 0.5) * 0.02;
+          h.deriva += (Math.random() - 0.5) * 0.006;
+          h.deriva = Math.max(-0.025, Math.min(0.025, h.deriva));
+          if (h.carga < 0.72) { h.carga = 0.72; h.deriva = Math.abs(h.deriva); }
           if (h.carga > 1) { h.carga = 1; h.deriva = -Math.abs(h.deriva); }
 
           var off = h.pos * util;
@@ -268,6 +271,21 @@
           ctx.stroke();
         }
         ctx.globalAlpha = 1;
+
+        // Manchitas: zonas pequeñas un poco más claras o más cargadas, como la tinta
+        // irregular de un bolígrafo
+        if (Math.random() < 0.4) {
+          var claro = Math.random() < 0.55;
+          var rr = ancho * (0.12 + Math.random() * 0.22);
+          var desv = (Math.random() - 0.5) * (ancho - rr * 2);
+          ctx.globalAlpha = claro ? 0.24 : 0.22;
+          ctx.fillStyle = claro ? tinta(0.62 + Math.random() * 0.12) : tinta(1, 0.84);
+          ctx.beginPath();
+          ctx.ellipse(medio.x + ux * desv, medio.y + uy * desv, rr * (2.2 + Math.random() * 1.6), rr * 0.8,
+                      Math.atan2(uy, ux) + Math.PI / 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
 
         // Bordes: en el bolígrafo la tinta se acumula en los cantos del trazo,
         // que quedan nítidos y un poco más oscuros
