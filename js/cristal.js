@@ -238,7 +238,13 @@
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
           var bien = res.ok && (res.j.success === true || res.j.success === "true");
-          estado.textContent = form.getAttribute(bien ? "data-ok" : "data-error");
+          var aviso = String((res.j && res.j.message) || "");
+          if (!bien && /activat/i.test(aviso)) {
+            // Primer envío: FormSubmit pide activar el formulario desde el correo
+            estado.textContent = "El formulario está pendiente de activación: revisa el correo de hey@cremebureau.com (también spam) y pulsa “Activate Form”.";
+          } else {
+            estado.textContent = form.getAttribute(bien ? "data-ok" : "data-error") + (!bien && aviso ? " (" + aviso + ")" : "");
+          }
           if (bien) form.reset();
         })
         .catch(function () { estado.textContent = form.getAttribute("data-error"); })
