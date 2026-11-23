@@ -1143,3 +1143,20 @@ html:has(body.fondo-verde) {
     margin-top: 3em;
   }
 }
+
+/* Línea de tiempo: más aire arriba y abajo */
+.linea-envoltura {
+  margin-top: 7em;
+  padding-bottom: 3em;
+}
+
+.linea-envoltura + .bloque {
+  margin-top: 14vh;
+}
+
+@media (max-width: 40rem) {
+  .linea-envoltura {
+    margin-top: 4em;
+    padding-bottom: 1em;
+  }
+}
