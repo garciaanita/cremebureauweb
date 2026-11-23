@@ -1160,3 +1160,87 @@ html:has(body.fondo-verde) {
     padding-bottom: 1em;
   }
 }
+
+/* Contacto: formulario sencillo (envía a info@cremebureau.com vía FormSubmit) */
+.contacto-form {
+  margin: 2.2em 0 2.4em;
+  max-width: 34em;
+}
+
+.contacto-form__campo {
+  display: block;
+  margin-bottom: 1.4em;
+}
+
+.contacto-form__campo span {
+  display: block;
+  margin-bottom: 0.4em;
+  color: var(--tinta-suave);
+  font-family: var(--titulo);
+  letter-spacing: 0;
+}
+
+.contacto-form input,
+.contacto-form textarea {
+  display: block;
+  width: 100%;
+  padding: 0.3em 0 0.5em;
+  font: inherit;
+  color: var(--tinta);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tinta-suave);
+  border-radius: 0;
+  resize: vertical;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.contacto-form textarea {
+  min-height: 6em;
+}
+
+.contacto-form input::placeholder,
+.contacto-form textarea::placeholder {
+  color: var(--tinta-suave);
+  opacity: 0.7;
+}
+
+.contacto-form input:focus,
+.contacto-form textarea:focus {
+  outline: none;
+  border-bottom-color: var(--tinta);
+}
+
+.contacto-form button {
+  font-family: var(--titulo);
+  font-size: 1.1em;
+  letter-spacing: 0;
+  color: var(--papel);
+  background: var(--tinta);
+  border: 0;
+  padding: 0.5em 1.4em;
+  cursor: pointer;
+}
+
+.contacto-form button:hover {
+  opacity: 0.8;
+}
+
+.contacto-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.contacto-form__estado {
+  margin-top: 1em;
+  min-height: 1.25em;
+}
+
+.contacto-form__trampa {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}

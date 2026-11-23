@@ -217,3 +217,32 @@
     });
   });
 })();
+
+// Creme Bureau — Contacto: envío del formulario sin salir de la página (FormSubmit)
+(function () {
+  "use strict";
+  document.querySelectorAll(".contacto-form").forEach(function (form) {
+    var estado = form.querySelector(".contacto-form__estado");
+    var boton = form.querySelector('button[type="submit"]');
+    form.addEventListener("submit", function (e) {
+      if (!window.fetch || !window.FormData) return;     // sin JS moderno: envío normal
+      e.preventDefault();
+      boton.disabled = true;
+      estado.textContent = form.getAttribute("data-enviando");
+      var datos = new FormData(form);
+      fetch(form.action.replace("formsubmit.co/", "formsubmit.co/ajax/"), {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: datos
+      })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          var bien = res.ok && (res.j.success === true || res.j.success === "true");
+          estado.textContent = form.getAttribute(bien ? "data-ok" : "data-error");
+          if (bien) form.reset();
+        })
+        .catch(function () { estado.textContent = form.getAttribute("data-error"); })
+        .then(function () { boton.disabled = false; });
+    });
+  });
+})();

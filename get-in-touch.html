@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap">
-<link rel="stylesheet" href="css/estilo.css?v=202611240008">
+<link rel="stylesheet" href="css/estilo.css?v=202611240015">
 <link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-contorno-oscuro-32.png">
 <link rel="icon" type="image/png" sizes="32x32" href="img/logo/favicon-contorno-oscuro-32.png" media="(prefers-color-scheme: light)">
 <link rel="icon" type="image/png" sizes="192x192" href="img/logo/icono-contorno-oscuro-192.png" media="(prefers-color-scheme: light)">
@@ -46,8 +46,24 @@
     <section class="bloque reticula">
       <p class="etiqueta">Escribir</p>
       <div class="texto">
-        <p>Cuéntenos qué tiene entre manos: el producto, en qué punto está y para cuándo. Con eso podemos decirle si somos la casa adecuada y qué haríamos primero.</p>
-        <p class="suave">Madrid, España<br><a href="https://www.instagram.com/cremebureau/" rel="me">Instagram</a></p>
+        <p>Toda buena idea tiene un punto de partida. Cuéntame la tuya y veamos cómo darle forma.</p>
+        <form class="contacto-form" action="https://formsubmit.co/info@cremebureau.com" method="POST" data-ok="¡Gracias! Tu mensaje ha llegado. Te responderé muy pronto." data-error="No se ha podido enviar. Prueba otra vez o escríbeme directamente a info@cremebureau.com." data-enviando="Enviando…">
+          <label class="contacto-form__campo">
+            <span>Tu correo</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="nombre@correo.com">
+          </label>
+          <label class="contacto-form__campo">
+            <span>Tu mensaje</span>
+            <textarea name="mensaje" rows="5" required placeholder="Cuéntame tu idea…"></textarea>
+          </label>
+          <input type="text" name="_honey" class="contacto-form__trampa" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input type="hidden" name="_subject" value="Nuevo mensaje desde cremebureau.com">
+          <input type="hidden" name="_template" value="box">
+          <input type="hidden" name="_captcha" value="false">
+          <button type="submit">Enviar</button>
+          <p class="contacto-form__estado" role="status" aria-live="polite"></p>
+        </form>
+        <p class="suave">Madrid, España<br><a href="https://www.linkedin.com/in/ana-garc%C3%ADa-0b3872197" rel="me" target="_blank">LinkedIn</a></p>
       </div>
     </section>
   </div>
@@ -62,13 +78,29 @@
     <section class="bloque reticula">
       <p class="etiqueta">Write</p>
       <div class="texto">
-        <p>Tell us what you've got in hand: the product, what stage it's at, and by when. With that we can tell you if we're the right studio for it, and what we'd do first.</p>
-        <p class="suave">Madrid, Spain<br><a href="https://www.instagram.com/cremebureau/" rel="me">Instagram</a></p>
+        <p>Every good idea has a starting point. Tell me yours and let’s see how to give it shape.</p>
+        <form class="contacto-form" action="https://formsubmit.co/info@cremebureau.com" method="POST" data-ok="Thank you! Your message is on its way. I’ll get back to you very soon." data-error="It couldn’t be sent. Try again or write to me directly at info@cremebureau.com." data-enviando="Sending…">
+          <label class="contacto-form__campo">
+            <span>Your email</span>
+            <input type="email" name="email" required autocomplete="email" placeholder="name@email.com">
+          </label>
+          <label class="contacto-form__campo">
+            <span>Your message</span>
+            <textarea name="mensaje" rows="5" required placeholder="Tell me your idea…"></textarea>
+          </label>
+          <input type="text" name="_honey" class="contacto-form__trampa" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <input type="hidden" name="_subject" value="Nuevo mensaje desde cremebureau.com">
+          <input type="hidden" name="_template" value="box">
+          <input type="hidden" name="_captcha" value="false">
+          <button type="submit">Send</button>
+          <p class="contacto-form__estado" role="status" aria-live="polite"></p>
+        </form>
+        <p class="suave">Madrid, Spain<br><a href="https://www.linkedin.com/in/ana-garc%C3%ADa-0b3872197" rel="me" target="_blank">LinkedIn</a></p>
       </div>
     </section>
   </div>
 </main>
 
-<script src="js/cristal.js?v=202611240008"></script>
+<script src="js/cristal.js?v=202611240015"></script>
 </body>
 </html>
