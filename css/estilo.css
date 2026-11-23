@@ -1299,3 +1299,10 @@ html:has(body.fondo-verde) {
     font-size: 0.85em;
   }
 }
+
+/* Franja: letra más fina. Cossette Titre solo tiene un peso, así que se adelgaza
+   "comiéndole" el borde con un trazo del color del fondo */
+.franja {
+  -webkit-text-stroke: 0.35px var(--papel);
+  -webkit-font-smoothing: antialiased;
+}
