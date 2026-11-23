@@ -194,3 +194,26 @@
     quitar(ultima);
   });
 })();
+
+// Creme Bureau — About: línea de tiempo del Project Journey.
+// Al tocar (móvil) o pulsar una fase se abre su descripción; las demás se cierran.
+(function () {
+  "use strict";
+  document.querySelectorAll(".linea-tiempo").forEach(function (linea) {
+    var hitos = linea.querySelectorAll(".hito");
+    hitos.forEach(function (hito) {
+      var boton = hito.querySelector(".hito__punto");
+      boton.addEventListener("click", function () {
+        var abrir = !hito.classList.contains("hito--abierto");
+        hitos.forEach(function (h) {
+          h.classList.remove("hito--abierto");
+          h.querySelector(".hito__punto").setAttribute("aria-expanded", "false");
+        });
+        if (abrir) {
+          hito.classList.add("hito--abierto");
+          boton.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+  });
+})();

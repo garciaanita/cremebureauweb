@@ -874,3 +874,162 @@ html:has(body.fondo-verde) {
 .bloque[hidden] + .bloque {
   margin-top: 0;
 }
+
+/* About: Project Journey como línea de tiempo (ordenador: horizontal con hover;
+   móvil: vertical, se toca cada fase para ver su descripción) */
+.linea-envoltura {
+  margin-top: 3em;
+}
+
+.linea-tiempo {
+  grid-column: 1 / -1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  column-gap: var(--hueco);
+}
+
+/* La línea discontinua */
+.linea-tiempo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 5px;
+  border-top: 1px dashed var(--tinta);
+}
+
+.hito {
+  position: relative;
+  padding-right: 1.2em;
+}
+
+.hito__punto {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* El punto sobre la línea */
+.hito__punto::before {
+  content: "";
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin-bottom: 1.1em;
+  border-radius: 50%;
+  background: var(--tinta);
+  transition: transform 0.2s ease;
+}
+
+.hito__num {
+  display: block;
+  color: var(--tinta-suave);
+  margin-bottom: 0.2em;
+}
+
+.hito__titulo {
+  display: block;
+  font-family: var(--titulo);
+  letter-spacing: 0;
+  font-size: 1.25em;
+  line-height: 1.05;
+}
+
+.hito__desc {
+  margin-top: 0.7em;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Mostrar la descripción: hover en ordenador, toque o teclado en cualquier dispositivo */
+@media (hover: hover) {
+  .hito:hover .hito__desc { opacity: 1; transform: none; }
+  .hito:hover .hito__punto::before { transform: scale(1.5); }
+  .hito:hover .hito__titulo { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+}
+
+.hito--abierto .hito__desc,
+.hito__punto:focus-visible + .hito__desc {
+  opacity: 1;
+  transform: none;
+}
+
+.hito--abierto .hito__punto::before {
+  transform: scale(1.5);
+}
+
+.hito__punto:focus-visible {
+  outline: none;
+}
+
+.hito__punto:focus-visible .hito__titulo {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 40rem) {
+  .linea-tiempo {
+    grid-template-columns: 1fr;
+    row-gap: 1.3em;
+  }
+
+  .linea-tiempo::before {
+    left: 5px;
+    right: auto;
+    top: 6px;
+    bottom: 6px;
+    border-top: 0;
+    border-left: 1px dashed var(--tinta);
+  }
+
+  .hito {
+    padding-right: 0;
+    padding-left: 2em;
+  }
+
+  .hito__punto::before {
+    position: absolute;
+    left: 0;
+    top: 0.25em;
+    margin: 0;
+  }
+
+  .hito__num {
+    display: inline;
+    margin-right: 0.5em;
+  }
+
+  .hito__titulo {
+    display: inline;
+  }
+
+  .hito__desc {
+    display: none;
+    margin-top: 0.4em;
+  }
+
+  .hito--abierto .hito__desc {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hito__desc,
+  .hito__punto::before {
+    transition: none;
+  }
+}
+
+.linea-envoltura + .bloque {
+  margin-top: 9vh;
+}
