@@ -253,13 +253,14 @@
   });
 })();
 
-// Creme Bureau — Portada: rueda de disciplinas entre el nombre y el logo.
-// Las palabras suben sin parar, una tras otra, como un tambor que gira.
+// Creme Bureau — Portada: franja vertical con las disciplinas, que avanza sin parar.
 (function () {
   "use strict";
-  var rueda = document.querySelector(".rueda");
-  if (!rueda) return;
-  var pista = rueda.querySelector(".rueda__pista");
+  var franja = document.querySelector(".franja");
+  if (!franja) return;
+  var pista = franja.querySelector(".franja__pista");
+  var marca = document.querySelector(".nav__marca");
+  var logo = document.querySelector(".nav__logo");
   var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var PALABRAS = {
@@ -268,20 +269,26 @@
     en: ["Branding", "Visual identity", "Editorial design", "Packaging", "Art direction",
          "Illustration", "Typography", "Print", "Web design", "UX/UI", "Social media", "Tattoo design"]
   };
-
-  var VELOCIDAD = 14;          // píxeles por segundo
-  var y = 0, altoLista = 0, idioma = null, anterior = null;
+  var VELOCIDAD = 40;   // píxeles por segundo
+  var y = 0, largo = 0, idioma = null, anterior = null;
 
   function idiomaActual() {
     return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "es";
   }
 
+  // Coloca la franja justo entre el final de "Creme Bureau" y el logo
+  function colocar() {
+    var a = marca.getBoundingClientRect(), b = logo.getBoundingClientRect();
+    franja.style.setProperty("--franja-x", ((a.right + b.left) / 2).toFixed(1) + "px");
+  }
+
   function montar() {
     idioma = idiomaActual();
-    var lista = PALABRAS[idioma];
-    // La lista va dos veces para que el bucle no tenga corte
-    pista.innerHTML = lista.concat(lista).map(function (p) { return "<span>" + p + "</span>"; }).join("");
-    altoLista = pista.scrollHeight / 2;
+    var frase = PALABRAS[idioma].join(" \u2014 ") + " \u2014 ";
+    pista.textContent = frase;
+    largo = pista.scrollHeight;                       // largo de una vuelta
+    var veces = Math.max(2, Math.ceil(window.innerHeight * 2 / Math.max(1, largo)) + 1);
+    pista.textContent = new Array(veces + 1).join(frase);
     y = 0;
   }
 
@@ -291,21 +298,15 @@
     anterior = t;
     if (idiomaActual() !== idioma) montar();
     y += VELOCIDAD * dt;
-    if (altoLista && y >= altoLista) y -= altoLista;
-    pista.style.transform = "translateY(" + (-y).toFixed(2) + "px)";
+    if (largo && y >= largo) y -= largo;
+    // rotate(180deg) invierte el eje: sumar y hace que el texto suba
+    pista.style.transform = "rotate(180deg) translateY(" + (-y).toFixed(2) + "px)";
     requestAnimationFrame(paso);
   }
 
+  colocar();
   montar();
-  if (reducido) {
-    // Sin animación continua: cambia de palabra cada pocos segundos
-    var i = 0;
-    setInterval(function () {
-      if (idiomaActual() !== idioma) montar();
-      i = (i + 1) % PALABRAS[idioma].length;
-      pista.style.transform = "translateY(-" + (i * altoLista / PALABRAS[idioma].length) + "px)";
-    }, 2500);
-  } else {
-    requestAnimationFrame(paso);
-  }
+  window.addEventListener("resize", function () { colocar(); montar(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { colocar(); montar(); });
+  if (!reducido) requestAnimationFrame(paso);
 })();

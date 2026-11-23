@@ -1245,59 +1245,57 @@ html:has(body.fondo-verde) {
   opacity: 0;
 }
 
-/* Portada: nombre, rueda de disciplinas y logo agrupados */
-.nav__grupo {
-  grid-column: 1 / span 2;
-  display: flex;
-  align-items: center;
-  gap: 0.9em;
-  min-width: 0;
-}
-
-.nav__grupo .nav__marca,
-.nav__grupo .nav__logo {
-  grid-column: auto;
-}
-
-.nav__grupo .nav__logo {
-  margin-left: auto;
-  margin-right: 1.2em;
-}
-
-@media (max-width: 40rem) {
-  .nav__grupo .nav__logo {
-    margin-right: 0;
-  }
-}
-
-/* Rueda: las disciplinas van pasando hacia arriba, como un tambor que gira */
-.rueda {
-  position: relative;
-  flex: 1 1 auto;
-  min-width: 0;
-  height: 1.35em;
+/* Portada: franja vertical con las disciplinas, de arriba abajo de la pantalla,
+   entre "Creme Bureau" y el logo. El texto avanza sin parar (js/cristal.js). */
+.franja {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--franja-x, 160px);
+  width: 1.4em;
+  transform: translateX(-50%);
   overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
   color: var(--tinta-suave);
+  font-family: var(--titulo);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   white-space: nowrap;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 30%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 30%, #000 70%, transparent 100%);
 }
 
-.rueda__pista {
-  display: block;
+.franja__pista {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);      /* se lee de abajo arriba */
+  line-height: 1.4em;
   will-change: transform;
 }
 
-.rueda__pista span {
-  display: block;
-  height: 1.35em;
-  line-height: 1.35em;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Las fotos y el texto de la portada pasan por encima de la franja */
+.lienzo .pieza,
+.lienzo .portada-texto {
+  z-index: 1;
+}
+
+.lienzo .pieza {
+  position: absolute;
 }
 
 @media (max-width: 40rem) {
-  .nav__grupo {
-    flex-basis: 100%;
+  .lienzo .pieza,
+  .lienzo .portada-texto {
+    position: relative;
+  }
+}
+
+/* Móvil: no cabe entre el nombre y el logo; la franja va al borde derecho,
+   por debajo del menú */
+@media (max-width: 40rem) {
+  .franja {
+    left: auto !important;
+    right: 0;
+    top: 84px;
+    transform: none;
+    font-size: 0.85em;
   }
 }
