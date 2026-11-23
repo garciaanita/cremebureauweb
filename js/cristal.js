@@ -269,7 +269,7 @@
     en: ["Branding", "Visual identity", "Editorial design", "Packaging", "Art direction",
          "Illustration", "Typography", "Print", "Web design", "UX/UI", "Social media", "Tattoo design"]
   };
-  var VELOCIDAD = 40;   // píxeles por segundo
+  var VELOCIDAD = 16;   // píxeles por segundo: lento y constante
   var y = 0, largo = 0, idioma = null, anterior = null;
 
   function idiomaActual() {
@@ -284,12 +284,12 @@
 
   function montar() {
     idioma = idiomaActual();
-    var frase = PALABRAS[idioma].join(" \u2014 ") + " \u2014 ";
+    var frase = PALABRAS[idioma].map(function (p) { return "(" + p + ")"; }).join("\u2003") + "\u2003";
     pista.textContent = frase;
     largo = pista.scrollHeight;                       // largo de una vuelta
     var veces = Math.max(2, Math.ceil(window.innerHeight * 2 / Math.max(1, largo)) + 1);
     pista.textContent = new Array(veces + 1).join(frase);
-    y = 0;
+    if (largo) y = y % largo;              // sin saltos al rehacer la frase
   }
 
   function paso(t) {
@@ -306,7 +306,12 @@
 
   colocar();
   montar();
-  window.addEventListener("resize", function () { colocar(); montar(); });
+  // Solo se rehace si cambia el ancho (en el móvil la barra de Safari cambia el alto a menudo)
+  var ancho = window.innerWidth;
+  window.addEventListener("resize", function () {
+    colocar();
+    if (window.innerWidth !== ancho) { ancho = window.innerWidth; montar(); }
+  });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { colocar(); montar(); });
   if (!reducido) requestAnimationFrame(paso);
 })();
