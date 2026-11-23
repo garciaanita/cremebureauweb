@@ -287,8 +287,10 @@
     var frase = PALABRAS[idioma].map(function (p) { return "(" + p + ")"; }).join("\u2003") + "\u2003";
     pista.textContent = frase;
     largo = pista.scrollHeight;                       // largo de una vuelta
-    var veces = Math.max(2, Math.ceil(window.innerHeight * 2 / Math.max(1, largo)) + 1);
+    var veces = Math.max(3, Math.ceil(window.innerHeight * 2 / Math.max(1, largo)) + 2);
     pista.textContent = new Array(veces + 1).join(frase);
+    // Largo exacto de una vuelta, medido sobre el texto ya repetido
+    largo = pista.getBoundingClientRect().height / veces;
     if (largo) y = y % largo;              // sin saltos al rehacer la frase
   }
 
@@ -300,7 +302,9 @@
     y += VELOCIDAD * dt;
     if (largo && y >= largo) y -= largo;
     // rotate(180deg) invierte el eje: sumar y hace que el texto suba
-    pista.style.transform = "rotate(180deg) translateY(" + (-y).toFixed(2) + "px)";
+    // Se parte desplazado una vuelta hacia arriba: así nunca queda hueco arriba,
+    // y al completar una vuelta la frase siguiente ocupa exactamente su sitio
+    pista.style.transform = "rotate(180deg) translateY(" + (largo - y).toFixed(2) + "px)";
     requestAnimationFrame(paso);
   }
 
