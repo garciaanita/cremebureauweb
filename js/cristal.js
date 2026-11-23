@@ -252,3 +252,60 @@
     });
   });
 })();
+
+// Creme Bureau — Portada: rueda de disciplinas entre el nombre y el logo.
+// Las palabras suben sin parar, una tras otra, como un tambor que gira.
+(function () {
+  "use strict";
+  var rueda = document.querySelector(".rueda");
+  if (!rueda) return;
+  var pista = rueda.querySelector(".rueda__pista");
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var PALABRAS = {
+    es: ["Branding", "Identidad visual", "Diseño editorial", "Packaging", "Dirección de arte",
+         "Ilustración", "Tipografía", "Print", "Diseño web", "UX/UI", "Redes sociales", "Tattoo design"],
+    en: ["Branding", "Visual identity", "Editorial design", "Packaging", "Art direction",
+         "Illustration", "Typography", "Print", "Web design", "UX/UI", "Social media", "Tattoo design"]
+  };
+
+  var VELOCIDAD = 14;          // píxeles por segundo
+  var y = 0, altoLista = 0, idioma = null, anterior = null;
+
+  function idiomaActual() {
+    return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "es";
+  }
+
+  function montar() {
+    idioma = idiomaActual();
+    var lista = PALABRAS[idioma];
+    // La lista va dos veces para que el bucle no tenga corte
+    pista.innerHTML = lista.concat(lista).map(function (p) { return "<span>" + p + "</span>"; }).join("");
+    altoLista = pista.scrollHeight / 2;
+    y = 0;
+  }
+
+  function paso(t) {
+    if (anterior === null) anterior = t;
+    var dt = Math.min(0.05, (t - anterior) / 1000);
+    anterior = t;
+    if (idiomaActual() !== idioma) montar();
+    y += VELOCIDAD * dt;
+    if (altoLista && y >= altoLista) y -= altoLista;
+    pista.style.transform = "translateY(" + (-y).toFixed(2) + "px)";
+    requestAnimationFrame(paso);
+  }
+
+  montar();
+  if (reducido) {
+    // Sin animación continua: cambia de palabra cada pocos segundos
+    var i = 0;
+    setInterval(function () {
+      if (idiomaActual() !== idioma) montar();
+      i = (i + 1) % PALABRAS[idioma].length;
+      pista.style.transform = "translateY(-" + (i * altoLista / PALABRAS[idioma].length) + "px)";
+    }, 2500);
+  } else {
+    requestAnimationFrame(paso);
+  }
+})();
