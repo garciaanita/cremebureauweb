@@ -1104,3 +1104,42 @@ html:has(body.fondo-verde) {
     transition: none;
   }
 }
+
+/* About: columna lateral a la derecha de la bio (Reconocimientos y Más) */
+.lateral {
+  grid-column: 8 / -1;
+  grid-row: 1;
+  align-self: start;
+  max-width: 34em;
+  color: var(--tinta);
+}
+
+.lateral__bloque + .lateral__bloque {
+  margin-top: 2.4em;
+}
+
+.lateral__bloque p + p {
+  margin-top: 0.6em;
+}
+
+.lateral__et {
+  color: var(--tinta-suave);
+  font-family: var(--titulo);
+  letter-spacing: 0;
+  margin-bottom: 0.9em;
+}
+
+.lateral__tit {
+  font-family: var(--titulo);
+  letter-spacing: 0;
+  font-size: 1.25em;
+  line-height: 1.1;
+}
+
+@media (max-width: 40rem) {
+  .lateral {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin-top: 3em;
+  }
+}
