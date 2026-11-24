@@ -1668,3 +1668,66 @@ html:has(body.portada) {
     margin-top: 7vh;
   }
 }
+
+/* About en móvil: Formación y Experiencia como desplegables */
+@media (max-width: 40rem) {
+  .plegable__boton {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1em;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .plegable__boton::after {
+    content: "+";
+    font-family: var(--titulo);
+    font-size: 1.3em;
+    line-height: 1;
+    color: var(--tinta);
+    transition: transform 0.25s ease;
+  }
+
+  .plegable--abierto .plegable__boton::after {
+    transform: rotate(45deg);
+  }
+
+  .plegable__boton:focus-visible {
+    outline: 1px dashed var(--tinta);
+    outline-offset: 4px;
+  }
+
+  /* Experiencia es una etiqueta de la retícula: ocupa todo el ancho en móvil */
+  .bloque.plegable .plegable__boton {
+    grid-column: 1 / -1;
+  }
+
+  /* Cerrado: solo se ve el título */
+  .lateral__bloque.plegable:not(.plegable--abierto) > :not(.plegable__boton),
+  .bloque.plegable:not(.plegable--abierto) + .tabla-envoltura {
+    display: none;
+  }
+
+  .lateral__bloque.plegable:not(.plegable--abierto) .plegable__boton {
+    margin-bottom: 0;
+  }
+
+  /* Abierto: aparece con suavidad */
+  .lateral__bloque.plegable--abierto > :not(.plegable__boton),
+  .bloque.plegable--abierto + .tabla-envoltura {
+    animation: plegable-abrir 0.3s ease;
+  }
+}
+
+@keyframes plegable-abrir {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plegable__boton::after { transition: none; }
+  .lateral__bloque.plegable--abierto > :not(.plegable__boton),
+  .bloque.plegable--abierto + .tabla-envoltura { animation: none; }
+}

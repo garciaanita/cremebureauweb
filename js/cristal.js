@@ -540,3 +540,42 @@
   cargarDesdeArchive();
 })();
 
+
+// Creme Bureau — About: en móvil, Formación y Experiencia se pliegan y despliegan
+(function () {
+  "use strict";
+  var plegables = document.querySelectorAll(".plegable");
+  if (!plegables.length) return;
+  var movil = window.matchMedia("(max-width: 40rem)");
+
+  function preparar() {
+    plegables.forEach(function (p) {
+      var boton = p.querySelector(".plegable__boton");
+      if (movil.matches) {
+        boton.setAttribute("role", "button");
+        boton.setAttribute("tabindex", "0");
+        boton.setAttribute("aria-expanded", p.classList.contains("plegable--abierto") ? "true" : "false");
+      } else {
+        boton.removeAttribute("role");
+        boton.removeAttribute("tabindex");
+        boton.removeAttribute("aria-expanded");
+      }
+    });
+  }
+
+  plegables.forEach(function (p) {
+    var boton = p.querySelector(".plegable__boton");
+    function alternar() {
+      if (!movil.matches) return;
+      var abierto = p.classList.toggle("plegable--abierto");
+      boton.setAttribute("aria-expanded", abierto ? "true" : "false");
+    }
+    boton.addEventListener("click", alternar);
+    boton.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); alternar(); }
+    });
+  });
+
+  if (movil.addEventListener) movil.addEventListener("change", preparar);
+  preparar();
+})();
