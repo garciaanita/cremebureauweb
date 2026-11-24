@@ -414,6 +414,17 @@
   var SITIOS = [[-0.36, -0.1], [0.34, 0.14], [-0.32, 0.16], [0.36, -0.12]];
 
   var objetivo = 0, camara = 0;
+  // Ratón: la cámara se desplaza un pelín y las fotos cercanas se mueven más que las lejanas
+  var MOVIMIENTO = 120;                  // desplazamiento máximo (px)
+  var raton = { x: 0, y: 0 }, mirada = { x: 0, y: 0 };
+  var luz = tunel.querySelector(".tunel__luz");
+  if (!reducido && window.matchMedia("(pointer: fine)").matches) {
+    window.addEventListener("pointermove", function (e) {
+      raton.x = (e.clientX / window.innerWidth - 0.5) * 2;     // de -1 a 1
+      raton.y = (e.clientY / window.innerHeight - 0.5) * 2;
+    }, { passive: true });
+    document.addEventListener("mouseleave", function () { raton.x = 0; raton.y = 0; });
+  }
 
   function ajustarAltura() {
     // Recorrido de scroll proporcional al número de fotos
@@ -433,7 +444,9 @@
   }
 
   function pintar() {
-    mundo.style.transform = "translateZ(" + camara.toFixed(1) + "px)";
+    mundo.style.transform = "translate3d(" + (-mirada.x * MOVIMIENTO).toFixed(2) + "px," +
+      (-mirada.y * MOVIMIENTO).toFixed(2) + "px," + camara.toFixed(1) + "px)";
+    if (luz) luz.style.translate = (mirada.x * 28).toFixed(2) + "px " + (mirada.y * 28).toFixed(2) + "px";
     fotos.forEach(function (f) {
       var z = f._z + camara;                       // profundidad respecto a la cámara
       // Aparecen desde la niebla al fondo y se desvanecen al pasar junto a la cámara
@@ -454,6 +467,8 @@
 
   function paso() {
     camara += (objetivo - camara) * (reducido ? 1 : 0.1);     // avance suave
+    mirada.x += (raton.x - mirada.x) * 0.04;                  // el ratón se sigue con calma
+    mirada.y += (raton.y - mirada.y) * 0.04;
     pintar();
     requestAnimationFrame(paso);
   }
