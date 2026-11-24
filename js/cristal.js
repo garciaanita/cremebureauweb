@@ -319,3 +319,56 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { colocar(); montar(); });
   if (!reducido) requestAnimationFrame(paso);
 })();
+
+// Creme Bureau — Portada: logo 3D de fondo que gira siguiendo el ratón (o el dedo).
+(function () {
+  "use strict";
+  var cuerpo = document.querySelector(".logo3d__cuerpo");
+  if (!cuerpo) return;
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // Capas: la de delante en verde claro, las de atrás cada vez más oscuras (el canto)
+  var CAPAS = 18, GROSOR = 26;           // número de capas y grosor total en px
+  var frente = [86, 79, 55], fondo = [30, 26, 14];
+  for (var i = CAPAS - 1; i >= 0; i--) {
+    var k = i / (CAPAS - 1);              // 0 delante, 1 detrás
+    var c = frente.map(function (v, n) { return Math.round(v + (fondo[n] - v) * Math.min(1, 0.35 + k)); });
+    if (i === 0) c = frente;
+    var capa = document.createElement("div");
+    capa.className = "logo3d__capa";
+    capa.style.background = "rgb(" + c.join(",") + ")";
+    capa.style.transform = "translateZ(" + (-i * GROSOR / CAPAS).toFixed(2) + "px)";
+    cuerpo.appendChild(capa);
+  }
+
+  var MAX_Y = 32, MAX_X = 20;            // giro máximo en grados
+  var objetivoX = 0, objetivoY = 0, x = 0, y = 0, tocado = false;
+
+  function apuntar(px, py) {
+    var nx = (px / window.innerWidth) * 2 - 1;     // -1 izquierda … 1 derecha
+    var ny = (py / window.innerHeight) * 2 - 1;    // -1 arriba … 1 abajo
+    objetivoY = nx * MAX_Y;
+    objetivoX = -ny * MAX_X;
+  }
+
+  window.addEventListener("pointermove", function (e) { tocado = true; apuntar(e.clientX, e.clientY); }, { passive: true });
+  window.addEventListener("pointerdown", function (e) { tocado = true; apuntar(e.clientX, e.clientY); }, { passive: true });
+
+  function paso(t) {
+    // Sin ratón (móvil en reposo): balanceo suave para que se aprecie el volumen
+    if (!tocado || window.matchMedia("(pointer: coarse)").matches && !tocado) {
+      objetivoY = Math.sin(t / 2600) * 18;
+      objetivoX = Math.sin(t / 3700) * 8;
+    }
+    x += (objetivoX - x) * 0.06;
+    y += (objetivoY - y) * 0.06;
+    cuerpo.style.transform = "rotateX(" + x.toFixed(2) + "deg) rotateY(" + y.toFixed(2) + "deg)";
+    requestAnimationFrame(paso);
+  }
+
+  if (reducido) {
+    cuerpo.style.transform = "rotateX(6deg) rotateY(-14deg)";
+  } else {
+    requestAnimationFrame(paso);
+  }
+})();

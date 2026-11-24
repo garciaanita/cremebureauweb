@@ -1306,3 +1306,39 @@ html:has(body.fondo-verde) {
   -webkit-text-stroke: 0.35px var(--papel);
   -webkit-font-smoothing: antialiased;
 }
+
+/* Portada: logo grande en 3D de fondo, gira según el ratón (js/cristal.js).
+   El volumen se construye apilando capas del logo en profundidad. */
+.logo3d {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  perspective: 1400px;
+  overflow: hidden;
+}
+
+.logo3d__cuerpo {
+  position: relative;
+  height: min(78vh, 120vw);
+  aspect-ratio: 1544 / 2530;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.logo3d__capa {
+  position: absolute;
+  inset: 0;
+  -webkit-mask: url("../img/logo/logo.png") center / contain no-repeat;
+  mask: url("../img/logo/logo.png") center / contain no-repeat;
+  backface-visibility: hidden;
+}
+
+@media (max-width: 40rem) {
+  .logo3d__cuerpo {
+    height: min(62vh, 130vw);
+  }
+}
