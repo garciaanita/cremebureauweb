@@ -1307,80 +1307,104 @@ html:has(body.fondo-verde) {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Portada: pantalla partida en dos, como una doble página de revista,
-   con una foto a cada lado (img/portada/izquierda.jpg y derecha.jpg) */
+/* Portada: croquis de dos fotos sobre fondo blanco. La escena queda fija
+   mientras se hace scroll y las fotos cambian dentro de los mismos huecos */
 .portada {
   --papel: #ffffff;
   background: var(--papel);
 }
 
-.revista {
+.croquis {
   position: relative;
   z-index: 0;
+  height: 220vh;              /* recorrido de scroll para el cambio */
 }
 
-/* Cada doble página ocupa una pantalla; al hacer scroll se pasa a la siguiente */
-.revista__doble {
+.croquis__escena {
+  position: sticky;
+  top: 0;
   height: 100vh;
   height: 100svh;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  scroll-snap-align: start;
-}
-
-html:has(body.portada) {
-  scroll-snap-type: y mandatory;
-}
-
-.revista__pagina {
-  position: relative;
-  margin: 0;
   overflow: hidden;
-  background: var(--reserva);
 }
 
-.revista__pagina img {
+.croquis__hueco {
+  position: absolute;
+  margin: 0;
+}
+
+.croquis__hueco--a {
+  left: 14vw;
+  top: 13vh;
+  width: min(31vw, 52vh);
+  aspect-ratio: 4 / 5;
+}
+
+.croquis__hueco--b {
+  right: 12vw;
+  top: 30vh;
+  width: min(25vw, 42vh);
+  aspect-ratio: 4 / 5;
+}
+
+.croquis__foto {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 0.9s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-/* El pliegue central: sombra suave a cada lado del lomo */
-.revista__pagina--izq::after,
-.revista__pagina--der::after {
-  content: "";
+.croquis__foto.es-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.croquis__hueco--b .croquis__foto { transition-delay: 0.12s; }
+
+.croquis__folio {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 9%;
-  pointer-events: none;
-}
-
-.revista__pagina--izq::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.04) 45%, transparent);
-}
-
-.revista__pagina--der::after {
+  top: calc(100% + 6px);
   left: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.03) 45%, transparent);
-}
-
-.revista__pagina--izq {
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.revista__folio {
-  position: absolute;
-  bottom: var(--margen);
-  color: #fff;
-  mix-blend-mode: difference;
   font-family: var(--titulo);
   letter-spacing: 0;
 }
 
-.revista__pagina--izq .revista__folio { left: var(--margen); }
-.revista__pagina--der .revista__folio { right: var(--margen); }
+.croquis__folio span {
+  position: absolute;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.croquis__folio span.es-visible {
+  opacity: 1;
+}
+
+@media (max-width: 40rem) {
+  .croquis__hueco--a {
+    left: 6vw;
+    top: 15vh;
+    width: 58vw;
+  }
+
+  .croquis__hueco--b {
+    right: 6vw;
+    top: auto;
+    bottom: 8vh;
+    width: 46vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .croquis__foto,
+  .croquis__folio span {
+    transition: none;
+  }
+}
 
 /* Menú y franja legibles sobre cualquier foto */
 .portada .nav,

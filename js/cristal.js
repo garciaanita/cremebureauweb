@@ -359,3 +359,30 @@
     requestAnimationFrame(paso);
   })();
 })();
+
+// Creme Bureau — Portada: al hacer scroll, las fotos cambian dentro del mismo croquis.
+(function () {
+  "use strict";
+  var croquis = document.querySelector(".croquis");
+  if (!croquis) return;
+  var huecos = croquis.querySelectorAll(".croquis__hueco");
+  var fase = -1;
+
+  function mostrar(n) {
+    if (n === fase) return;
+    fase = n;
+    huecos.forEach(function (h) {
+      h.querySelectorAll(".croquis__foto").forEach(function (f, i) { f.classList.toggle("es-visible", i === n); });
+      h.querySelectorAll(".croquis__folio span").forEach(function (f, i) { f.classList.toggle("es-visible", i === n); });
+    });
+  }
+
+  function alScroll() {
+    var recorrido = croquis.offsetHeight - window.innerHeight;
+    var p = recorrido > 0 ? window.scrollY / recorrido : 0;
+    mostrar(p > 0.35 ? 1 : 0);
+  }
+
+  window.addEventListener("scroll", alScroll, { passive: true });
+  alScroll();
+})();

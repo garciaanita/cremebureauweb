@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap"
     />
-    <link rel="stylesheet" href="css/estilo.css?v=202611240150" />
+    <link rel="stylesheet" href="css/estilo.css?v=202611240153" />
     <link
       rel="icon"
       type="image/png"
@@ -73,30 +73,23 @@
 
     <div class="franja" aria-hidden="true"><div class="franja__pista"></div></div>
 
-    <main id="principal" class="revista">
+    <main id="principal" class="croquis">
       <h1 class="sr-solo">Creme Bureau — Ana García Peña</h1>
-      <section class="revista__doble">
-        <figure class="revista__pagina revista__pagina--izq">
-          <img src="img/portada/01.jpg" alt="Doble página editorial: Core Believes &amp; Principles">
-          <figcaption class="revista__folio">(001)</figcaption>
+      <!-- Dos huecos fijos en la pantalla; al hacer scroll cambian las fotos -->
+      <div class="croquis__escena">
+        <figure class="croquis__hueco croquis__hueco--a">
+          <img class="croquis__foto es-visible" src="img/portada/01.jpg" alt="Doble página editorial: Core Believes &amp; Principles">
+          <img class="croquis__foto" src="img/portada/03.jpg" alt="Botella La Fundadora de Soberana">
+          <figcaption class="croquis__folio"><span class="es-visible">(001)</span><span>(003)</span></figcaption>
         </figure>
-        <figure class="revista__pagina revista__pagina--der">
-          <img src="img/portada/02.jpg" alt="Doble página editorial: Functionality &gt; Aesthetics &gt; Designer’s Ego">
-          <figcaption class="revista__folio">(002)</figcaption>
+        <figure class="croquis__hueco croquis__hueco--b">
+          <img class="croquis__foto es-visible" src="img/portada/02.jpg" alt="Doble página editorial: Functionality &gt; Aesthetics &gt; Designer’s Ego">
+          <img class="croquis__foto" src="img/portada/04.jpg" alt="Logotipo de Soberana sobre fotografía botánica">
+          <figcaption class="croquis__folio"><span class="es-visible">(002)</span><span>(004)</span></figcaption>
         </figure>
-      </section>
-      <section class="revista__doble">
-        <figure class="revista__pagina revista__pagina--izq">
-          <img src="img/portada/03.jpg" alt="Botella La Fundadora de Soberana" loading="lazy">
-          <figcaption class="revista__folio">(003)</figcaption>
-        </figure>
-        <figure class="revista__pagina revista__pagina--der">
-          <img src="img/portada/04.jpg" alt="Logotipo de Soberana sobre fotografía botánica" loading="lazy">
-          <figcaption class="revista__folio">(004)</figcaption>
-        </figure>
-      </section>
+      </div>
     </main>
 
-    <script src="js/cristal.js?v=202611240150"></script>
+    <script src="js/cristal.js?v=202611240153"></script>
   </body>
 </html>
