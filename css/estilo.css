@@ -1307,102 +1307,62 @@ html:has(body.fondo-verde) {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Portada: croquis de dos fotos sobre fondo blanco. La escena queda fija
-   mientras se hace scroll y las fotos cambian dentro de los mismos huecos */
+/* Portada: viaje en 3D. Al hacer scroll se avanza de frente y las fotos,
+   colocadas a distintas profundidades, van pasando (parallax). js/cristal.js */
 .portada {
   --papel: #ffffff;
   background: var(--papel);
 }
 
-.croquis {
+.tunel {
   position: relative;
   z-index: 0;
-  height: 220vh;              /* recorrido de scroll para el cambio */
+  height: 520vh;                 /* recorrido de scroll del viaje */
 }
 
-.croquis__escena {
+.tunel__escena {
   position: sticky;
   top: 0;
   height: 100vh;
   height: 100svh;
   overflow: hidden;
+  perspective: 900px;
+  perspective-origin: 50% 50%;
 }
 
-.croquis__hueco {
+.tunel__mundo {
   position: absolute;
-  margin: 0;
+  left: 50%;
+  top: 50%;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
-.croquis__hueco--a {
-  left: 14vw;
-  top: 13vh;
-  width: min(31vw, 52vh);
-  aspect-ratio: 4 / 5;
-}
-
-.croquis__hueco--b {
-  right: 12vw;
-  top: 30vh;
-  width: min(25vw, 42vh);
-  aspect-ratio: 4 / 5;
-}
-
-.croquis__foto {
+.tunel__foto {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transform: scale(1.03);
-  transition: opacity 0.9s ease, transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.croquis__foto.es-visible {
-  opacity: 1;
-  transform: none;
-}
-
-.croquis__hueco--b .croquis__foto { transition-delay: 0.12s; }
-
-.croquis__folio {
-  position: absolute;
-  top: calc(100% + 6px);
   left: 0;
+  top: 0;
+  margin: 0;
+  width: min(26vw, 420px);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.tunel__foto img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.tunel__foto figcaption {
+  margin-top: 6px;
   font-family: var(--titulo);
   letter-spacing: 0;
 }
 
-.croquis__folio span {
-  position: absolute;
-  white-space: nowrap;
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-
-.croquis__folio span.es-visible {
-  opacity: 1;
-}
-
 @media (max-width: 40rem) {
-  .croquis__hueco--a {
-    left: 6vw;
-    top: 15vh;
-    width: 58vw;
-  }
-
-  .croquis__hueco--b {
-    right: 6vw;
-    top: auto;
-    bottom: 8vh;
-    width: 46vw;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .croquis__foto,
-  .croquis__folio span {
-    transition: none;
+  .tunel__foto {
+    width: 52vw;
   }
 }
 

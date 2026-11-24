@@ -360,29 +360,68 @@
   })();
 })();
 
-// Creme Bureau — Portada: al hacer scroll, las fotos cambian dentro del mismo croquis.
+// Creme Bureau — Portada: viaje en 3D. El scroll mueve la cámara hacia delante y las
+// fotos (a distintas profundidades y a izquierda/derecha) pasan junto al espectador.
 (function () {
   "use strict";
-  var croquis = document.querySelector(".croquis");
-  if (!croquis) return;
-  var huecos = croquis.querySelectorAll(".croquis__hueco");
-  var fase = -1;
+  var tunel = document.querySelector(".tunel");
+  if (!tunel) return;
+  var mundo = tunel.querySelector(".tunel__mundo");
+  var fotos = Array.prototype.slice.call(tunel.querySelectorAll(".tunel__foto"));
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function mostrar(n) {
-    if (n === fase) return;
-    fase = n;
-    huecos.forEach(function (h) {
-      h.querySelectorAll(".croquis__foto").forEach(function (f, i) { f.classList.toggle("es-visible", i === n); });
-      h.querySelectorAll(".croquis__folio span").forEach(function (f, i) { f.classList.toggle("es-visible", i === n); });
+  var SEPARACION = 1100;                 // distancia en profundidad entre fotos (px)
+  var INICIO = 350;                      // la primera foto empieza algo lejos
+  // Posición en pantalla de cada foto (fracción del ancho / alto de la ventana)
+  var SITIOS = [[-0.36, -0.1], [0.34, 0.14], [-0.32, 0.16], [0.36, -0.12]];
+
+  var objetivo = 0, camara = 0;
+
+  function colocar() {
+    var movil = window.innerWidth < 640;
+    var w = window.innerWidth, h = window.innerHeight;
+    fotos.forEach(function (f, i) {
+      var s = SITIOS[i % SITIOS.length];
+      var ancho = f.offsetWidth, alto = f.offsetHeight;
+      f._x = s[0] * w * (movil ? 0.55 : 1) - ancho / 2;
+      f._y = s[1] * h - alto / 2;
+      f._z = -(INICIO + i * SEPARACION);
     });
   }
 
-  function alScroll() {
-    var recorrido = croquis.offsetHeight - window.innerHeight;
-    var p = recorrido > 0 ? window.scrollY / recorrido : 0;
-    mostrar(p > 0.35 ? 1 : 0);
+  function pintar() {
+    mundo.style.transform = "translateZ(" + camara.toFixed(1) + "px)";
+    fotos.forEach(function (f) {
+      var z = f._z + camara;                       // profundidad respecto a la cámara
+      // Aparecen desde la niebla al fondo y se desvanecen al pasar junto a la cámara
+      var lejos = Math.min(1, Math.max(0, (z + 3200) / 1600));
+      var cerca = Math.min(1, Math.max(0, (650 - z) / 450));
+      f.style.opacity = (lejos * cerca).toFixed(3);
+      f.style.visibility = lejos * cerca < 0.01 ? "hidden" : "visible";
+      f.style.transform = "translate3d(" + f._x.toFixed(1) + "px," + f._y.toFixed(1) + "px," + f._z + "px)";
+    });
   }
 
-  window.addEventListener("scroll", alScroll, { passive: true });
-  alScroll();
+  function leerScroll() {
+    var recorrido = tunel.offsetHeight - window.innerHeight;
+    var p = recorrido > 0 ? Math.min(1, Math.max(0, window.scrollY / recorrido)) : 0;
+    // Al final la última foto queda delante, a distancia cómoda
+    objetivo = p * (INICIO + (fotos.length - 1) * SEPARACION - 250 + 350);
+  }
+
+  function paso() {
+    camara += (objetivo - camara) * (reducido ? 1 : 0.1);     // avance suave
+    pintar();
+    requestAnimationFrame(paso);
+  }
+
+  function rehacer() { colocar(); leerScroll(); }
+  window.addEventListener("scroll", leerScroll, { passive: true });
+  window.addEventListener("resize", rehacer);
+  window.addEventListener("load", rehacer);
+  rehacer();
+  camara = objetivo;
+  pintar();
+  requestAnimationFrame(paso);
 })();
+
