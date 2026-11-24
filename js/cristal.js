@@ -335,8 +335,8 @@
     var c = frente.map(function (v, n) { return Math.round(v + (fondo[n] - v) * Math.min(1, 0.35 + k)); });
     if (i === 0) c = frente;
     var capa = document.createElement("div");
-    capa.className = "logo3d__capa";
-    capa.style.background = "rgb(" + c.join(",") + ")";
+    capa.className = "logo3d__capa" + (i === 0 ? " logo3d__capa--frente" : "");
+    capa.style.backgroundColor = "rgb(" + c.join(",") + ")";   // la textura de papel va en el CSS
     capa.style.transform = "translateZ(" + (-i * GROSOR / CAPAS).toFixed(2) + "px)";
     cuerpo.appendChild(capa);
   }
