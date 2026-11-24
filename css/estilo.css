@@ -1310,12 +1310,12 @@ html:has(body.fondo-verde) {
 /* Portada: fondo crema y el logo trazado como un dibujo a línea (filtros SVG
    en index.html). Al pasar el ratón, la línea tiembla (js/cristal.js). */
 .portada {
-  --papel: #f4f0e1;
+  --papel: #ffffff;
   background: var(--papel);
 }
 
 html:has(body.portada) {
-  background: #f4f0e1;
+  background: #ffffff;
 }
 
 .lienzo--solo {
