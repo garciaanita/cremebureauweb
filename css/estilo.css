@@ -1684,8 +1684,9 @@ html:has(body.portada) {
   .plegable__boton::after {
     content: "+";
     font-family: var(--titulo);
-    font-size: 1.3em;
-    line-height: 1;
+    font-size: 2.2em;
+    font-weight: 300;
+    line-height: 0.6;
     color: var(--tinta);
     transition: transform 0.25s ease;
   }
