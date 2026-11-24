@@ -249,6 +249,15 @@
 // Creme Bureau — Contacto: envío del formulario sin salir de la página (FormSubmit)
 (function () {
   "use strict";
+  // PDF de servicios: si todavía no está subido, se oculta el enlace
+  if (window.fetch && document.querySelector(".contacto-pdf")) {
+    fetch("docs/creme-bureau-servicios.pdf", { method: "HEAD", cache: "no-cache" })
+      .then(function (r) {
+        if (!r.ok) document.querySelectorAll(".contacto-pdf").forEach(function (b) { b.hidden = true; });
+      })
+      .catch(function () {});
+  }
+
   document.querySelectorAll(".contacto-form").forEach(function (form) {
     var estado = form.querySelector(".contacto-form__estado");
     var boton = form.querySelector('button[type="submit"]');
@@ -490,7 +499,9 @@
       })
       .then(function (orden) {
         if (!orden || !orden.length) return;
-        mundo.innerHTML = orden.map(function (f) {
+        // Las fotos propias de la portada (en index.html) van siempre primero
+        var fijas = Array.prototype.map.call(mundo.querySelectorAll(".tunel__foto"), function (f) { return f.outerHTML; }).join("");
+        mundo.innerHTML = fijas + orden.map(function (f) {
           return '<figure class="tunel__foto"><img src="' + f.src + '" alt="' + f.alt.replace(/"/g, "&quot;") + '"></figure>';
         }).join("");
         fotos = Array.prototype.slice.call(mundo.querySelectorAll(".tunel__foto"));

@@ -1162,6 +1162,29 @@ html:has(body.fondo-verde) {
 }
 
 /* Contacto: formulario sencillo (envía a info@cremebureau.com vía FormSubmit) */
+/* Enlace al PDF de servicios y precios */
+.enlace-pdf {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  font-family: var(--titulo);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.enlace-pdf__flecha {
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+.enlace-pdf:hover .enlace-pdf__flecha,
+.enlace-pdf:focus-visible .enlace-pdf__flecha {
+  transform: translateY(0.18em);
+}
+
 .contacto-form {
   margin: 2.2em 0 2.4em;
   max-width: 34em;
@@ -1338,6 +1361,34 @@ html:has(body.portada) {
   overflow: hidden;
   perspective: 900px;
   perspective-origin: 50% 50%;
+}
+
+/* Luz al final del túnel: un resplandor central muy suave y difuso */
+.tunel__luz {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(70vw, 900px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    rgba(255, 250, 236, 0.16) 0%,
+    rgba(255, 250, 236, 0.07) 35%,
+    rgba(255, 250, 236, 0.02) 65%,
+    rgba(255, 250, 236, 0) 100%);
+  filter: blur(30px);
+  pointer-events: none;
+  animation: tunel-luz 9s ease-in-out infinite alternate;
+}
+
+@keyframes tunel-luz {
+  from { opacity: 0.75; transform: translate(-50%, -50%) scale(0.94); }
+  to   { opacity: 1;    transform: translate(-50%, -50%) scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tunel__luz { animation: none; }
 }
 
 .tunel__mundo {
