@@ -1506,3 +1506,23 @@ html:has(body.portada) {
     transition: none;
   }
 }
+
+/* Fotos ancladas: se pueden arrastrar */
+.anclada {
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.anclada img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.anclada--arrastrando {
+  cursor: grabbing;
+  box-shadow: 0 22px 60px -14px rgba(0, 0, 0, 0.4);
+  transform: scale(1.015);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}

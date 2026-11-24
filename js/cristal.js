@@ -156,7 +156,35 @@
       e.stopPropagation();
       quitar(el);
     });
-    el.addEventListener("pointerdown", function () { alFrente(el); });
+    // Arrastrar: se puede mover la foto a cualquier sitio de la pantalla
+    el.addEventListener("pointerdown", function (e) {
+      alFrente(el);
+      if (e.target.closest(".anclada__cerrar")) return;
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      e.preventDefault();
+      var inicioX = e.clientX, inicioY = e.clientY;
+      var izq = parseFloat(el.style.left) || 0, arr = parseFloat(el.style.top) || 0;
+      el.classList.add("anclada--arrastrando");
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+
+      function mover(ev) {
+        var w = el.offsetWidth, h = el.offsetHeight;
+        // Que siempre quede al menos un trozo visible para poder recuperarla
+        var nx = Math.min(window.innerWidth - 40, Math.max(40 - w, izq + ev.clientX - inicioX));
+        var ny = Math.min(window.innerHeight - 40, Math.max(0, arr + ev.clientY - inicioY));
+        el.style.left = nx + "px";
+        el.style.top = ny + "px";
+      }
+      function soltar() {
+        el.classList.remove("anclada--arrastrando");
+        el.removeEventListener("pointermove", mover);
+        el.removeEventListener("pointerup", soltar);
+        el.removeEventListener("pointercancel", soltar);
+      }
+      el.addEventListener("pointermove", mover);
+      el.addEventListener("pointerup", soltar);
+      el.addEventListener("pointercancel", soltar);
+    });
 
     el.appendChild(foto);
     el.appendChild(cerrar);
