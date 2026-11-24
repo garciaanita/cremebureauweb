@@ -1315,11 +1315,21 @@ html:has(body.fondo-verde) {
 }
 
 .revista {
-  position: fixed;
-  inset: 0;
+  position: relative;
   z-index: 0;
+}
+
+/* Cada doble página ocupa una pantalla; al hacer scroll se pasa a la siguiente */
+.revista__doble {
+  height: 100vh;
+  height: 100svh;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  scroll-snap-align: start;
+}
+
+html:has(body.portada) {
+  scroll-snap-type: y mandatory;
 }
 
 .revista__pagina {
@@ -1389,7 +1399,7 @@ html:has(body.fondo-verde) {
 }
 
 @media (max-width: 40rem) {
-  .revista {
+  .revista__doble {
     grid-template-columns: 1fr;
     grid-template-rows: 1fr 1fr;
   }
