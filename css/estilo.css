@@ -1732,3 +1732,9 @@ html:has(body.portada) {
   .lateral__bloque.plegable--abierto > :not(.plegable__boton),
   .bloque.plegable--abierto + .tabla-envoltura { animation: none; }
 }
+
+/* Contacto: aunque el enlace al PDF esté oculto, el formulario mantiene su separación del correo */
+.contacto-pdf[hidden] + .bloque,
+.contacto-pdf + .bloque {
+  margin-top: max(9vh, 3.5em);
+}
