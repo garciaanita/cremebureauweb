@@ -329,7 +329,9 @@
 
   // Capas: la de delante en verde claro, las de atrás cada vez más oscuras (el canto)
   var CAPAS = 18, GROSOR = 26;           // número de capas y grosor total en px
-  var frente = [86, 79, 55], fondo = [30, 26, 14];
+  // Sobre fondo blanco (portada): verde del logo; sobre verde: tonos verdes claros
+  var blanco = document.body.classList.contains("portada");
+  var frente = blanco ? [74, 67, 44] : [86, 79, 55], fondo = blanco ? [36, 32, 18] : [30, 26, 14];
   for (var i = CAPAS - 1; i >= 0; i--) {
     var k = i / (CAPAS - 1);              // 0 delante, 1 detrás
     var c = frente.map(function (v, n) { return Math.round(v + (fondo[n] - v) * Math.min(1, 0.35 + k)); });
@@ -362,7 +364,7 @@
     }
     x += (objetivoX - x) * 0.06;
     y += (objetivoY - y) * 0.06;
-    cuerpo.style.transform = "rotateX(" + x.toFixed(2) + "deg) rotateY(" + y.toFixed(2) + "deg)";
+    cuerpo.style.transform = "translateZ(-120px) rotateX(" + x.toFixed(2) + "deg) rotateY(" + y.toFixed(2) + "deg)";
     requestAnimationFrame(paso);
   }
 

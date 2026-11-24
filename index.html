@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap"
     />
-    <link rel="stylesheet" href="css/estilo.css?v=202611240116" />
+    <link rel="stylesheet" href="css/estilo.css?v=202611240118" />
     <link
       rel="icon"
       type="image/png"
@@ -50,13 +50,13 @@
       media="(prefers-color-scheme: dark)"
     />
   </head>
-  <body class="fondo-verde">
+  <body class="portada">
     <a class="salto" href="#principal">Ir al contenido</a>
 
     <header class="nav nav--centro reticula">
       <a class="nav__marca" href="index.html">Creme Bureau</a>
       <a class="nav__logo" href="index.html" tabindex="-1" aria-hidden="true"
-        ><img src="img/logo/logo-menu-crema.png" alt="" width="59" height="96"
+        ><img src="img/logo/logo-menu.png" alt="" width="59" height="96"
       /></a>
       <span class="nav__salto" aria-hidden="true"></span>
       <nav class="nav__enlaces" aria-label="Principal">
@@ -71,6 +71,13 @@
       </div>
     </header>
 
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <filter id="rugoso" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="ruido"/>
+        <feDisplacementMap in="SourceGraphic" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </svg>
+
     <div class="logo3d" aria-hidden="true"><div class="logo3d__cuerpo"></div></div>
 
     <div class="franja" aria-hidden="true"><div class="franja__pista"></div></div>
@@ -79,6 +86,6 @@
       <h1 class="sr-solo">Creme Bureau — Ana García Peña</h1>
     </main>
 
-    <script src="js/cristal.js?v=202611240116"></script>
+    <script src="js/cristal.js?v=202611240118"></script>
   </body>
 </html>
