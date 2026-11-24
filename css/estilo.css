@@ -1420,10 +1420,10 @@ html:has(body.fondo-verde) {
   }
 }
 
-/* Franja de disciplinas en Pantone 13-4804 TCX Pale Blue (#C4D6D3) */
+/* Franja de disciplinas en gris clarito */
 .franja,
 .portada .franja {
-  color: #c4d6d3;
+  color: #c8c8c8;
   mix-blend-mode: normal;
   -webkit-text-stroke: 0;
 }
