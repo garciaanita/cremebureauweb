@@ -1308,10 +1308,20 @@ html:has(body.fondo-verde) {
 }
 
 /* Portada: viaje en 3D. Al hacer scroll se avanza de frente y las fotos,
-   colocadas a distintas profundidades, van pasando (parallax). js/cristal.js */
+   colocadas a distintas profundidades, van pasando (parallax). js/cristal.js
+   Fondo negro con texto claro (contraste accesible) */
 .portada {
-  --papel: #ffffff;
+  --papel: #000000;
+  --tinta: #ffffff;
+  --tinta-suave: rgba(255, 255, 255, 0.7);
+  --reserva: #1a1a1a;
   background: var(--papel);
+  color: var(--tinta);
+}
+
+html:has(body.portada) {
+  background: #000000;
+  color-scheme: dark;
 }
 
 .tunel {
