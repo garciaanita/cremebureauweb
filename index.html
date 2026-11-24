@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap"
     />
-    <link rel="stylesheet" href="css/estilo.css?v=202611240124" />
+    <link rel="stylesheet" href="css/estilo.css?v=202611240128" />
     <link
       rel="icon"
       type="image/png"
@@ -56,7 +56,7 @@
     <header class="nav nav--centro reticula">
       <a class="nav__marca" href="index.html">Creme Bureau</a>
       <a class="nav__logo" href="index.html" tabindex="-1" aria-hidden="true"
-        ><img src="img/logo/logo-menu.png" alt="" width="59" height="96"
+        ><img src="img/logo/logo-menu-crema.png" alt="" width="59" height="96"
       /></a>
       <span class="nav__salto" aria-hidden="true"></span>
       <nav class="nav__enlaces" aria-label="Principal">
@@ -71,65 +71,21 @@
       </div>
     </header>
 
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-      <filter id="trazo" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="dentro"/>
-        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="ruido"/>
-        <feDisplacementMap in="borde" in2="ruido" scale="2.5" xChannelSelector="R" yChannelSelector="G" result="mano"/>
-        <feGaussianBlur in="mano" stdDeviation="0.3" result="corrida"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="8" result="poro"/>
-        <feColorMatrix in="poro" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.45" result="carga"/>
-        <feComposite in="corrida" in2="carga" operator="in" result="tintada"/>
-        <feFlood flood-color="#75705c" result="color"/>
-        <feComposite in="color" in2="tintada" operator="in"/>
-      </filter>
-      <filter id="tiembla1" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="dentro"/>
-        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="11" result="ruido"/>
-        <feDisplacementMap in="borde" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G" result="mano"/>
-        <feGaussianBlur in="mano" stdDeviation="0.3" result="corrida"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="16" result="poro"/>
-        <feColorMatrix in="poro" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.45" result="carga"/>
-        <feComposite in="corrida" in2="carga" operator="in" result="tintada"/>
-        <feFlood flood-color="#75705c" result="color"/>
-        <feComposite in="color" in2="tintada" operator="in"/>
-      </filter>
-      <filter id="tiembla2" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="dentro"/>
-        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="27" result="ruido"/>
-        <feDisplacementMap in="borde" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G" result="mano"/>
-        <feGaussianBlur in="mano" stdDeviation="0.3" result="corrida"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="32" result="poro"/>
-        <feColorMatrix in="poro" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.45" result="carga"/>
-        <feComposite in="corrida" in2="carga" operator="in" result="tintada"/>
-        <feFlood flood-color="#75705c" result="color"/>
-        <feComposite in="color" in2="tintada" operator="in"/>
-      </filter>
-      <filter id="tiembla3" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-        <feMorphology in="SourceAlpha" operator="erode" radius="1.5" result="dentro"/>
-        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="42" result="ruido"/>
-        <feDisplacementMap in="borde" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G" result="mano"/>
-        <feGaussianBlur in="mano" stdDeviation="0.3" result="corrida"/>
-        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="47" result="poro"/>
-        <feColorMatrix in="poro" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.45" result="carga"/>
-        <feComposite in="corrida" in2="carga" operator="in" result="tintada"/>
-        <feFlood flood-color="#75705c" result="color"/>
-        <feComposite in="color" in2="tintada" operator="in"/>
-      </filter>
-    </svg>
-
-    <div class="dibujo" aria-hidden="true"><img class="dibujo__logo" src="img/logo/logo.png" alt="" width="732" height="1200"></div>
-
     <div class="franja" aria-hidden="true"><div class="franja__pista"></div></div>
 
-    <main id="principal" class="lienzo lienzo--solo">
+    <main id="principal" class="revista">
       <h1 class="sr-solo">Creme Bureau — Ana García Peña</h1>
+      <!-- Pon las fotos en img/portada/izquierda.jpg y img/portada/derecha.jpg -->
+      <figure class="revista__pagina revista__pagina--izq">
+        <img src="img/portada/izquierda.jpg" alt="">
+        <figcaption class="revista__folio">(001)</figcaption>
+      </figure>
+      <figure class="revista__pagina revista__pagina--der">
+        <img src="img/portada/derecha.jpg" alt="">
+        <figcaption class="revista__folio">(002)</figcaption>
+      </figure>
     </main>
 
-    <script src="js/cristal.js?v=202611240124"></script>
+    <script src="js/cristal.js?v=202611240128"></script>
   </body>
 </html>

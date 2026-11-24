@@ -1307,68 +1307,115 @@ html:has(body.fondo-verde) {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Portada: fondo crema y el logo trazado como un dibujo a línea (filtros SVG
-   en index.html). Al pasar el ratón, la línea tiembla (js/cristal.js). */
+/* Portada: pantalla partida en dos, como una doble página de revista,
+   con una foto a cada lado (img/portada/izquierda.jpg y derecha.jpg) */
 .portada {
   --papel: #ffffff;
   background: var(--papel);
 }
 
-html:has(body.portada) {
-  background: #ffffff;
-}
-
-.lienzo--solo {
-  height: 100vh;
-  min-height: 100vh;
-  padding: 0;
-}
-
-.dibujo {
+.revista {
   position: fixed;
   inset: 0;
   z-index: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.revista__pagina {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  background: var(--reserva);
+}
+
+.revista__pagina img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* El pliegue central: sombra suave a cada lado del lomo */
+.revista__pagina--izq::after,
+.revista__pagina--der::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 9%;
   pointer-events: none;
 }
 
-.dibujo__logo {
-  width: auto;
-  height: min(62vh, 100vw);
-  object-fit: contain;
-  filter: url(#trazo);
-  pointer-events: auto;
-  cursor: crosshair;
-  /* aparece dibujándose: se descubre en un barrido circular */
-  -webkit-mask-image: conic-gradient(from 200deg, #000 var(--trazo, 360deg), transparent 0);
-  mask-image: conic-gradient(from 200deg, #000 var(--trazo, 360deg), transparent 0);
+.revista__pagina--izq::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.16), rgba(0, 0, 0, 0.04) 45%, transparent);
 }
 
-.dibujo__logo.tiembla-1 { filter: url(#tiembla1); }
-.dibujo__logo.tiembla-2 { filter: url(#tiembla2); }
-.dibujo__logo.tiembla-3 { filter: url(#tiembla3); }
-
-@property --trazo {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 360deg;
+.revista__pagina--der::after {
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.03) 45%, transparent);
 }
 
-@keyframes trazar {
-  from { --trazo: 0deg; }
-  to { --trazo: 360deg; }
+.revista__pagina--izq {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .dibujo__logo {
-    animation: trazar 2.2s cubic-bezier(0.45, 0, 0.25, 1) 0.2s both;
-  }
+.revista__folio {
+  position: absolute;
+  bottom: var(--margen);
+  color: #fff;
+  mix-blend-mode: difference;
+  font-family: var(--titulo);
+  letter-spacing: 0;
+}
+
+.revista__pagina--izq .revista__folio { left: var(--margen); }
+.revista__pagina--der .revista__folio { right: var(--margen); }
+
+/* Menú y franja legibles sobre cualquier foto */
+.portada .nav,
+.portada .franja {
+  mix-blend-mode: difference;
+}
+
+.portada .nav {
+  color: #ffffff;
+}
+
+.portada .franja {
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.7);
+  -webkit-text-stroke: 0;
 }
 
 @media (max-width: 40rem) {
-  .dibujo__logo {
-    height: min(52vh, 110vw);
+  .revista {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .revista__pagina--izq {
+    border-right: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .revista__pagina--izq::after,
+  .revista__pagina--der::after {
+    left: 0;
+    right: 0;
+    width: auto;
+    height: 9%;
+  }
+
+  .revista__pagina--izq::after {
+    top: auto;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.14), transparent);
+  }
+
+  .revista__pagina--der::after {
+    top: 0;
+    bottom: auto;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent);
   }
 }
