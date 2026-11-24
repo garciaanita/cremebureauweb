@@ -1353,7 +1353,7 @@ html:has(body.portada) {
   left: 0;
   top: 0;
   margin: 0;
-  width: min(26vw, 420px);
+  width: min(40vw, 640px);
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
@@ -1372,7 +1372,7 @@ html:has(body.portada) {
 
 @media (max-width: 40rem) {
   .tunel__foto {
-    width: 52vw;
+    width: 72vw;
   }
 }
 
