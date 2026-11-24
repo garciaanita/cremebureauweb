@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Cossette+Titre&family=Libertinus+Math&family=Libertinus+Serif:ital@1&display=swap"
     />
-    <link rel="stylesheet" href="css/estilo.css?v=202611240118" />
+    <link rel="stylesheet" href="css/estilo.css?v=202611240121" />
     <link
       rel="icon"
       type="image/png"
@@ -72,13 +72,41 @@
     </header>
 
     <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-      <filter id="rugoso" x="-5%" y="-5%" width="110%" height="110%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="7" result="ruido"/>
-        <feDisplacementMap in="SourceGraphic" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+      <filter id="trazo" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="dentro"/>
+        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
+        <feFlood flood-color="#302b1b" result="tinta"/>
+        <feComposite in="tinta" in2="borde" operator="in" result="linea"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="ruido"/>
+        <feDisplacementMap in="linea" in2="ruido" scale="2.5" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="tiembla1" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="dentro"/>
+        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
+        <feFlood flood-color="#302b1b" result="tinta"/>
+        <feComposite in="tinta" in2="borde" operator="in" result="linea"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="11" result="ruido"/>
+        <feDisplacementMap in="linea" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="tiembla2" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="dentro"/>
+        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
+        <feFlood flood-color="#302b1b" result="tinta"/>
+        <feComposite in="tinta" in2="borde" operator="in" result="linea"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="27" result="ruido"/>
+        <feDisplacementMap in="linea" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="tiembla3" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <feMorphology in="SourceAlpha" operator="erode" radius="1.4" result="dentro"/>
+        <feComposite in="SourceAlpha" in2="dentro" operator="out" result="borde"/>
+        <feFlood flood-color="#302b1b" result="tinta"/>
+        <feComposite in="tinta" in2="borde" operator="in" result="linea"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="42" result="ruido"/>
+        <feDisplacementMap in="linea" in2="ruido" scale="5" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
     </svg>
 
-    <div class="logo3d" aria-hidden="true"><div class="logo3d__cuerpo"></div></div>
+    <div class="dibujo" aria-hidden="true"><img class="dibujo__logo" src="img/logo/logo.png" alt="" width="732" height="1200"></div>
 
     <div class="franja" aria-hidden="true"><div class="franja__pista"></div></div>
 
@@ -86,6 +114,6 @@
       <h1 class="sr-solo">Creme Bureau — Ana García Peña</h1>
     </main>
 
-    <script src="js/cristal.js?v=202611240118"></script>
+    <script src="js/cristal.js?v=202611240121"></script>
   </body>
 </html>
