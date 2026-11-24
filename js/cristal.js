@@ -390,6 +390,7 @@
 
 // Creme Bureau — Portada: viaje en 3D. El scroll mueve la cámara hacia delante y las
 // fotos (a distintas profundidades y a izquierda/derecha) pasan junto al espectador.
+// Las fotos salen de las galerías de archive.html: al añadir una foto allí, aparece aquí.
 (function () {
   "use strict";
   var tunel = document.querySelector(".tunel");
@@ -405,12 +406,17 @@
 
   var objetivo = 0, camara = 0;
 
+  function ajustarAltura() {
+    // Recorrido de scroll proporcional al número de fotos
+    tunel.style.height = Math.max(3, fotos.length * 1.1 + 1) * 100 + "vh";
+  }
+
   function colocar() {
     var movil = window.innerWidth < 640;
     var w = window.innerWidth, h = window.innerHeight;
     fotos.forEach(function (f, i) {
       var s = SITIOS[i % SITIOS.length];
-      var ancho = f.offsetWidth, alto = f.offsetHeight;
+      var ancho = f.offsetWidth, alto = f.offsetHeight || ancho * 1.25;
       f._x = s[0] * w * (movil ? 0.55 : 1) - ancho / 2;
       f._y = s[1] * h - alto / 2;
       f._z = -(INICIO + i * SEPARACION);
@@ -434,7 +440,7 @@
     var recorrido = tunel.offsetHeight - window.innerHeight;
     var p = recorrido > 0 ? Math.min(1, Math.max(0, window.scrollY / recorrido)) : 0;
     // Al final la última foto queda delante, a distancia cómoda
-    objetivo = p * (INICIO + (fotos.length - 1) * SEPARACION - 250 + 350);
+    objetivo = p * (INICIO + (fotos.length - 1) * SEPARACION + 100);
   }
 
   function paso() {
@@ -444,12 +450,67 @@
   }
 
   function rehacer() { colocar(); leerScroll(); }
+
+  // Lee archive.html y usa las fotos que existan en sus galerías,
+  // alternando proyectos para que el recorrido sea variado
+  function cargarDesdeArchive() {
+    if (!window.fetch || !window.DOMParser) return;
+    fetch("archive.html", { cache: "no-cache" })
+      .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+      .then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var bloque = doc.querySelector('[data-i18n="es"]') || doc;
+        var porProyecto = [];
+        bloque.querySelectorAll(".galeria").forEach(function (g) {
+          var lista = [];
+          g.querySelectorAll("img").forEach(function (img) {
+            lista.push({ src: img.getAttribute("src"), alt: img.getAttribute("alt") || "" });
+          });
+          porProyecto.push(lista);
+        });
+        // Comprueba qué fotos existen de verdad
+        var todas = [];
+        porProyecto.forEach(function (lista, p) { lista.forEach(function (f, i) { f.p = p; f.i = i; todas.push(f); }); });
+        return Promise.all(todas.map(function (f) {
+          return new Promise(function (ok) {
+            var im = new Image();
+            im.onload = function () { f.existe = true; ok(); };
+            im.onerror = function () { ok(); };
+            im.src = f.src;
+          });
+        })).then(function () {
+          var colas = porProyecto.map(function (lista) { return lista.filter(function (f) { return f.existe; }); });
+          var orden = [], quedan = true;
+          for (var ronda = 0; quedan; ronda++) {
+            quedan = false;
+            colas.forEach(function (c) { if (c[ronda]) { orden.push(c[ronda]); quedan = true; } });
+          }
+          return orden;
+        });
+      })
+      .then(function (orden) {
+        if (!orden || !orden.length) return;
+        mundo.innerHTML = orden.map(function (f) {
+          return '<figure class="tunel__foto"><img src="' + f.src + '" alt="' + f.alt.replace(/"/g, "&quot;") + '"></figure>';
+        }).join("");
+        fotos = Array.prototype.slice.call(mundo.querySelectorAll(".tunel__foto"));
+        ajustarAltura();
+        // Recolocar cuando cada foto conozca su tamaño
+        fotos.forEach(function (f) { var im = f.querySelector("img"); if (!im.complete) im.addEventListener("load", rehacer); });
+        rehacer();
+        pintar();
+      })
+      .catch(function () { /* sin conexión o abierta en local: se quedan las fotos de reserva */ });
+  }
+
   window.addEventListener("scroll", leerScroll, { passive: true });
   window.addEventListener("resize", rehacer);
   window.addEventListener("load", rehacer);
+  ajustarAltura();
   rehacer();
   camara = objetivo;
   pintar();
   requestAnimationFrame(paso);
+  cargarDesdeArchive();
 })();
 
