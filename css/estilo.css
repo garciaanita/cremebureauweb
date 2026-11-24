@@ -1427,3 +1427,78 @@ html:has(body.fondo-verde) {
   mix-blend-mode: normal;
   -webkit-text-stroke: 0;
 }
+
+/* Cursor propio: el logo, siempre en contraste (se invierte según el fondo).
+   Sobre enlaces y botones se transforma en un degradado difuminado.
+   Solo en ordenador (ratón); en pantallas táctiles no se usa. */
+@media (hover: hover) and (pointer: fine) {
+  html.cursor-propio,
+  html.cursor-propio * {
+    cursor: none;
+  }
+}
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 22px;
+  height: 36px;
+  margin: -18px 0 0 -11px;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cursor--visible {
+  opacity: 1;
+}
+
+.cursor__forma {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  -webkit-mask: url("../img/logo/logo.png") center / contain no-repeat;
+  mask: url("../img/logo/logo.png") center / contain no-repeat;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease;
+}
+
+.cursor__halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 70px;
+  height: 70px;
+  margin: -35px 0 0 -35px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, rgba(255, 255, 255, 0.85) 35%, rgba(255, 255, 255, 0) 70%);
+  filter: blur(6px);
+  transform: scale(0.2);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease;
+}
+
+/* Sobre un enlace o botón: el logo se disuelve en el degradado */
+.cursor--activo .cursor__forma {
+  transform: scale(0.4);
+  opacity: 0;
+}
+
+.cursor--activo .cursor__halo {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.cursor--pulsado .cursor__halo {
+  transform: scale(0.8);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor__forma,
+  .cursor__halo {
+    transition: none;
+  }
+}

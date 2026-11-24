@@ -319,3 +319,43 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { colocar(); montar(); });
   if (!reducido) requestAnimationFrame(paso);
 })();
+
+// Creme Bureau — Cursor propio con el logo (solo con ratón).
+(function () {
+  "use strict";
+  if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+  var cursor = document.createElement("div");
+  cursor.className = "cursor";
+  cursor.setAttribute("aria-hidden", "true");
+  cursor.innerHTML = '<span class="cursor__halo"></span><span class="cursor__forma"></span>';
+  document.body.appendChild(cursor);
+  document.documentElement.classList.add("cursor-propio");
+
+  var INTERACTIVO = "a, button, label, input, textarea, select, summary, [role='button'], .galeria__foto, .hito__punto, .anclada__cerrar";
+  var x = -100, y = -100, cx = -100, cy = -100, visto = false;
+  var reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  window.addEventListener("pointermove", function (e) {
+    if (e.pointerType !== "mouse") return;
+    x = e.clientX; y = e.clientY;
+    if (!visto) { cx = x; cy = y; visto = true; }
+    var t = e.target;
+    // En el lienzo de Playground manda el cursor del boli
+    var enLienzo = t.closest && t.closest(".boli-lienzo");
+    cursor.classList.toggle("cursor--visible", !enLienzo);
+    cursor.classList.toggle("cursor--activo", !!(t.closest && t.closest(INTERACTIVO)));
+  }, { passive: true });
+
+  document.addEventListener("pointerdown", function () { cursor.classList.add("cursor--pulsado"); });
+  document.addEventListener("pointerup", function () { cursor.classList.remove("cursor--pulsado"); });
+  document.documentElement.addEventListener("mouseleave", function () { cursor.classList.remove("cursor--visible"); });
+
+  (function paso() {
+    var k = reducido ? 1 : 0.35;          // seguimiento suave
+    cx += (x - cx) * k;
+    cy += (y - cy) * k;
+    cursor.style.transform = "translate3d(" + cx.toFixed(1) + "px," + cy.toFixed(1) + "px,0)";
+    requestAnimationFrame(paso);
+  })();
+})();
