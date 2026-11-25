@@ -1746,7 +1746,7 @@ html:has(body.portada) {
 }
 
 .galeria__foto + .galeria__foto {
-  border-left: 4px solid var(--papel);
+  border-left: 3px solid var(--papel);
 }
 
 /* Más de 6 fotos: la banda se convierte en un carrusel horizontal */
@@ -1814,11 +1814,11 @@ html:has(body.portada) {
   }
 
   .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(2n) {
-    border-left: 4px solid var(--papel);
+    border-left: 3px solid var(--papel);
   }
 
   .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(n+3) {
-    border-top: 4px solid var(--papel);
+    border-top: 3px solid var(--papel);
   }
 
   /* Carrusel en móvil: dos fotos a la vista, se desliza con el dedo */
