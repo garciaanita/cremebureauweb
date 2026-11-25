@@ -579,3 +579,68 @@
   if (movil.addEventListener) movil.addEventListener("change", preparar);
   preparar();
 })();
+
+// Creme Bureau — Archive: con más de 6 fotos, la galería es un carrusel en la misma banda
+(function () {
+  "use strict";
+  var MAXIMO = 6;
+  var movil = window.matchMedia("(max-width: 40rem)");
+
+  document.querySelectorAll(".galeria").forEach(function (galeria) {
+    var ingles = !!galeria.closest('[data-i18n="en"]');
+    var controles = document.createElement("div");
+    controles.className = "galeria__controles";
+    controles.hidden = true;
+    controles.innerHTML =
+      '<span class="galeria__cuenta" aria-hidden="true"></span>' +
+      '<button type="button" class="galeria__flecha" data-dir="-1" aria-label="' + (ingles ? "Previous photos" : "Fotos anteriores") + '">←</button>' +
+      '<button type="button" class="galeria__flecha" data-dir="1" aria-label="' + (ingles ? "Next photos" : "Fotos siguientes") + '">→</button>';
+    galeria.insertAdjacentElement("afterend", controles);
+    var cuenta = controles.querySelector(".galeria__cuenta");
+    var atras = controles.querySelector('[data-dir="-1"]');
+    var alante = controles.querySelector('[data-dir="1"]');
+
+    function visibles() {
+      return Array.prototype.filter.call(galeria.querySelectorAll(".galeria__foto"), function (f) {
+        return !f.classList.contains("vacia");
+      });
+    }
+
+    function actualizar() {
+      if (!galeria.classList.contains("galeria--carrusel")) return;
+      var fotos = visibles();
+      var ancho = fotos.length ? fotos[0].getBoundingClientRect().width : 1;
+      var porVista = Math.max(1, Math.round(galeria.clientWidth / ancho));
+      var primera = Math.round(galeria.scrollLeft / ancho);
+      var ultima = Math.min(fotos.length, primera + porVista);
+      cuenta.textContent = (primera + 1) + "–" + ultima + " / " + fotos.length;
+      atras.disabled = galeria.scrollLeft <= 2;
+      alante.disabled = galeria.scrollLeft + galeria.clientWidth >= galeria.scrollWidth - 2;
+    }
+
+    function revisar() {
+      var carrusel = visibles().length > MAXIMO;
+      galeria.classList.toggle("galeria--carrusel", carrusel);
+      controles.hidden = !carrusel;
+      actualizar();
+    }
+
+    controles.addEventListener("click", function (e) {
+      var b = e.target.closest(".galeria__flecha");
+      if (!b) return;
+      galeria.scrollBy({ left: Number(b.getAttribute("data-dir")) * galeria.clientWidth, behavior: "smooth" });
+    });
+    galeria.addEventListener("scroll", actualizar, { passive: true });
+    // Las fotos que no existen se marcan como vacías al fallar la carga: se vuelve a contar
+    galeria.querySelectorAll("img").forEach(function (img) {
+      img.addEventListener("error", function () { setTimeout(revisar, 0); });
+      img.addEventListener("load", actualizar);
+    });
+    window.addEventListener("resize", actualizar);
+    var idioma = document.getElementById("idioma-btn");
+    if (idioma) idioma.addEventListener("click", function () { setTimeout(actualizar, 50); });
+    if (movil.addEventListener) movil.addEventListener("change", revisar);
+    revisar();
+    window.addEventListener("load", revisar);
+  });
+})();

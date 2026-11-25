@@ -1738,3 +1738,99 @@ html:has(body.portada) {
 .contacto-pdf + .bloque {
   margin-top: max(9vh, 3.5em);
 }
+
+/* Archive: las fotos de cada proyecto se separan con una línea muy fina */
+.galeria {
+  column-gap: 0;
+  row-gap: 0;
+}
+
+.galeria__foto + .galeria__foto {
+  border-left: 1px solid var(--tinta);
+}
+
+/* Más de 6 fotos: la banda se convierte en un carrusel horizontal */
+.galeria--carrusel {
+  grid-template-columns: none;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(100% / 6);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+.galeria--carrusel::-webkit-scrollbar {
+  display: none;
+}
+
+.galeria--carrusel .galeria__foto {
+  scroll-snap-align: start;
+}
+
+.galeria__controles {
+  grid-column: 3 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 1.2em;
+  margin-top: 0.6em;
+  font-family: var(--titulo);
+  letter-spacing: 0;
+}
+
+.galeria__controles[hidden] {
+  display: none;
+}
+
+.galeria__cuenta {
+  color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums;
+  margin-right: auto;
+}
+
+.galeria__flecha {
+  padding: 0.1em 0.2em;
+  font-family: var(--texto);
+  font-size: 1.4em;
+  line-height: 1;
+  color: var(--tinta);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.galeria__flecha:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+@media (max-width: 40rem) {
+  /* Cuadrícula de 2 en móvil: línea vertical entre columnas y horizontal entre filas */
+  .galeria:not(.galeria--carrusel) .galeria__foto + .galeria__foto {
+    border-left: 0;
+  }
+
+  .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(2n) {
+    border-left: 1px solid var(--tinta);
+  }
+
+  .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(n+3) {
+    border-top: 1px solid var(--tinta);
+  }
+
+  /* Carrusel en móvil: dos fotos a la vista, se desliza con el dedo */
+  .galeria--carrusel {
+    grid-auto-columns: 50%;
+  }
+
+  .galeria__controles {
+    grid-column: 2 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .galeria--carrusel { scroll-behavior: auto; }
+}
