@@ -1739,14 +1739,14 @@ html:has(body.portada) {
   margin-top: max(9vh, 3.5em);
 }
 
-/* Archive: las fotos de cada proyecto se separan con una línea muy fina */
+/* Archive: las fotos de cada proyecto se separan con un hueco fino del color del fondo */
 .galeria {
   column-gap: 0;
   row-gap: 0;
 }
 
 .galeria__foto + .galeria__foto {
-  border-left: 1px solid var(--tinta);
+  border-left: 4px solid var(--papel);
 }
 
 /* Más de 6 fotos: la banda se convierte en un carrusel horizontal */
@@ -1814,11 +1814,11 @@ html:has(body.portada) {
   }
 
   .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(2n) {
-    border-left: 1px solid var(--tinta);
+    border-left: 4px solid var(--papel);
   }
 
   .galeria:not(.galeria--carrusel) .galeria__foto:nth-child(n+3) {
-    border-top: 1px solid var(--tinta);
+    border-top: 4px solid var(--papel);
   }
 
   /* Carrusel en móvil: dos fotos a la vista, se desliza con el dedo */
