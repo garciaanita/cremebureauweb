@@ -156,35 +156,84 @@
       e.stopPropagation();
       quitar(el);
     });
-    // Arrastrar: se puede mover la foto a cualquier sitio de la pantalla
+    // Arrastrar con un dedo (o el ratón) y, en el móvil, pellizcar con dos dedos
+    // para agrandarla o encogerla mientras se coloca donde cada uno quiera
+    var punteros = {};
+    var gesto = null;
+
+    function listaPunteros() {
+      return Object.keys(punteros).map(function (id) { return punteros[id]; });
+    }
+
+    // Guarda el estado de partida; se rehace cada vez que entra o sale un dedo
+    function empezarGesto() {
+      var p = listaPunteros();
+      gesto = {
+        izq: parseFloat(el.style.left) || 0,
+        arr: parseFloat(el.style.top) || 0,
+        ancho: el.offsetWidth,
+        x: p[0].x,
+        y: p[0].y
+      };
+      if (p.length > 1) {
+        gesto.dist = Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y) || 1;
+        gesto.x = (p[0].x + p[1].x) / 2;
+        gesto.y = (p[0].y + p[1].y) / 2;
+      }
+    }
+
+    function mover(ev) {
+      if (!punteros[ev.pointerId] || !gesto) return;
+      punteros[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+      var p = listaPunteros();
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var nx, ny;
+
+      if (p.length > 1 && gesto.dist) {
+        var dist = Math.hypot(p[1].x - p[0].x, p[1].y - p[0].y);
+        var mx = (p[0].x + p[1].x) / 2, my = (p[0].y + p[1].y) / 2;
+        var ancho = Math.min(vw * 2.5, Math.max(90, gesto.ancho * dist / gesto.dist));
+        var s = ancho / gesto.ancho;
+        // El punto de la foto que queda entre los dedos sigue entre los dedos
+        nx = mx - (gesto.x - gesto.izq) * s;
+        ny = my - (gesto.y - gesto.arr) * s;
+        el.style.width = Math.round(ancho) + "px";
+      } else {
+        nx = gesto.izq + ev.clientX - gesto.x;
+        ny = gesto.arr + ev.clientY - gesto.y;
+      }
+      // Que siempre quede al menos un trozo visible para poder recuperarla
+      var w = el.offsetWidth, h = el.offsetHeight;
+      nx = Math.min(vw - 40, Math.max(40 - w, nx));
+      ny = Math.min(vh - 40, Math.max(40 - h, ny));
+      el.style.left = nx + "px";
+      el.style.top = ny + "px";
+    }
+
+    function soltar(ev) {
+      if (!punteros[ev.pointerId]) return;
+      delete punteros[ev.pointerId];
+      if (listaPunteros().length) {
+        empezarGesto();
+      } else {
+        gesto = null;
+        el.classList.remove("anclada--arrastrando");
+      }
+    }
+
     el.addEventListener("pointerdown", function (e) {
       alFrente(el);
       if (e.target.closest(".anclada__cerrar")) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       e.preventDefault();
-      var inicioX = e.clientX, inicioY = e.clientY;
-      var izq = parseFloat(el.style.left) || 0, arr = parseFloat(el.style.top) || 0;
-      el.classList.add("anclada--arrastrando");
       try { el.setPointerCapture(e.pointerId); } catch (err) {}
-
-      function mover(ev) {
-        var w = el.offsetWidth, h = el.offsetHeight;
-        // Que siempre quede al menos un trozo visible para poder recuperarla
-        var nx = Math.min(window.innerWidth - 40, Math.max(40 - w, izq + ev.clientX - inicioX));
-        var ny = Math.min(window.innerHeight - 40, Math.max(0, arr + ev.clientY - inicioY));
-        el.style.left = nx + "px";
-        el.style.top = ny + "px";
-      }
-      function soltar() {
-        el.classList.remove("anclada--arrastrando");
-        el.removeEventListener("pointermove", mover);
-        el.removeEventListener("pointerup", soltar);
-        el.removeEventListener("pointercancel", soltar);
-      }
-      el.addEventListener("pointermove", mover);
-      el.addEventListener("pointerup", soltar);
-      el.addEventListener("pointercancel", soltar);
+      punteros[e.pointerId] = { x: e.clientX, y: e.clientY };
+      el.classList.add("anclada--arrastrando");
+      empezarGesto();
     });
+    el.addEventListener("pointermove", mover);
+    el.addEventListener("pointerup", soltar);
+    el.addEventListener("pointercancel", soltar);
 
     el.appendChild(foto);
     el.appendChild(cerrar);
